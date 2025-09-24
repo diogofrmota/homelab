@@ -1,0 +1,10 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: metallb
+  namespace: metallb-system
+spec:
+  chart: metallb
+  repo: https://metallb.github.io/metallb
+  targetNamespace: metallb-system
+  version: 0.15.2
