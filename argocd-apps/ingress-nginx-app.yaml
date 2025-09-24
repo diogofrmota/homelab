@@ -3,12 +3,14 @@ kind: Application
 metadata:
   name: ingress-nginx
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   source:
     repoURL: https://kubernetes.github.io/ingress-nginx
     chart: ingress-nginx
-    targetRevision: 4.*              # keep it simple; any 4.x
+    targetRevision: 4.13.2
     helm:
       values: |
         controller:
@@ -27,3 +29,4 @@ spec:
     syncOptions:
 
       - CreateNamespace=true
+
