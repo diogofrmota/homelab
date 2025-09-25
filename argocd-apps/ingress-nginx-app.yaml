@@ -16,9 +16,12 @@ spec:
         controller:
           service:
             type: LoadBalancer
-            externalTrafficPolicy: Local      # preserves client IPs
+            externalTrafficPolicy: Local
           publishService:
-            enabled: true                     # fixes address/status publishing
+            enabled: true
+        controller:
+          admissionWebhooks:
+            enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: ingress-nginx
