@@ -1,15 +1,19 @@
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
-  namespace: metallb-system # new namespace
   name: home-pool
+  namespace: metallb-system
 spec:
   addresses:
-  - 192.168.1.210-192.168.1.220 # Fixed IP
+  - 192.168.1.210-192.168.1.220
+  autoAssign: true
 
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
 metadata:
-  namespace: metallb-system
   name: home-adv
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - home-pool
