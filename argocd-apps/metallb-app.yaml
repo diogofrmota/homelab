@@ -9,8 +9,12 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/diogofrmota/homelab.git'
-    path: apps/metallb
-    targetRevision: main
+    chart: metallb
+    targetRevision: 0.15.2
+    helm:
+    values: |
+      webhook:
+        enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system
@@ -18,3 +22,4 @@ spec:
     automated:
       selfHeal: true
       prune: true
+
