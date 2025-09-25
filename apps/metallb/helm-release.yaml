@@ -27,6 +27,12 @@ spec:
             - key: "node-role.kubernetes.io/master"
               operator: "Exists"
               effect: "NoSchedule"
+        configInline:
+          address-pools:
+          - name: home-pool
+            protocol: layer2
+            addresses:
+            - 192.168.1.210-192.168.1.220
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system
