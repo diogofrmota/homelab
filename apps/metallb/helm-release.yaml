@@ -27,6 +27,9 @@ spec:
             - key: "node-role.kubernetes.io/master"
               operator: "Exists"
               effect: "NoSchedule"
+        webhook:
+          enabled: false
+
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb-system
@@ -36,4 +39,5 @@ spec:
       prune: true
     syncOptions:
       - CreateNamespace=true
+
 
