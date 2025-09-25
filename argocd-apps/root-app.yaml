@@ -9,12 +9,11 @@ spec:
     repoURL: 'https://github.com/diogofrmota/homelab.git'
     path: argocd-apps
     targetRevision: main
-    directory:
-      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
   syncPolicy:
     automated:
       selfHeal: true
+
       prune: true
