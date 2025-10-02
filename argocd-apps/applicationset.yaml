@@ -10,21 +10,21 @@ spec:
         elements:
           - name: argocd
           - name: cert-manager
-          - name: changedetection
-          - name: cloudnative-pg
-            namespace: cnpg-system
-            serverSideApply: true
-          - name: crowdsec
+          #- name: changedetection
+          #- name: cloudnative-pg
+          #  namespace: cnpg-system
+          #  serverSideApply: true
+          #- name: crowdsec
           - name: external-dns
           - name: external-secrets
             serverSideApply: true
-          - name: go-healthcheck
-          - name: homepage
+          #- name: go-healthcheck
+          #- name: homepage
           - name: ingress-nginx
-          - name: kube-prometheus-stack
-            namespace: monitoring
-            serverSideApply: true
-          - name: loki
+          #- name: kube-prometheus-stack
+          #  namespace: monitoring
+          #  serverSideApply: true
+          #- name: loki
           - name: metallb
           - name: oauth2-proxy
           - name: pihole
@@ -70,3 +70,4 @@ spec:
           - RespectIgnoreDifferences=true
 
           - '{{ printf "%s=%s" "ServerSideApply" (dig "serverSideApply" "false" . | toString) }}'
+
