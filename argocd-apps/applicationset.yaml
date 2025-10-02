@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - list:
+        elements:
+          - name: argocd
+          - name: cert-manager
+          - name: changedetection
+          - name: cloudnative-pg
+            namespace: cnpg-system
+            serverSideApply: true
+          - name: crowdsec
+          - name: external-dns
+          - name: external-secrets
+            serverSideApply: true
+          - name: go-healthcheck
+          - name: homepage
+          - name: ingress-nginx
+          - name: kube-prometheus-stack
+            namespace: monitoring
+            serverSideApply: true
+          - name: loki
+          - name: metallb
+          - name: oauth2-proxy
+          - name: pihole
+          - name: tailscale-operator
+
+  template:
+    metadata:
+      name: "{{ .name }}"
+      annotations:
+        argocd.argoproj.io/manifest-generate-paths: "."
+        notifications.argoproj.io/subscribe.on-sync-succeeded.telegram: "7108341107"
+        argocd.argoproj.io/compare-options: '{{ printf "%s=%s" "ServerSideDiff" (dig "serverSideDiff" "false" . | toString) }}'
+    spec:
+      project: default
+      source:
+        repoURL: git@github.com:diogofrmota/homelab.git
+        targetRevision: HEAD
+        path: "k8s-apps/{{ .name }}"
+      destination:
+        name: in-cluster
+        namespace: '{{ default .name (dig "namespace" "" .) }}'
+      ignoreDifferences:
+        - group: apiextensions.k8s.io
+          kind: CustomResourceDefinition
+          jqPathExpressions:
+            - .spec.conversion.webhook.clientConfig.caBundle
+        # FIXME: https://github.com/cloudnative-pg/charts/issues/426
+        - group: postgresql.cnpg.io
+          kind: Cluster
+          jqPathExpressions:
+            - .spec.postgresql.pg_hba
+            - .spec.postgresql.pg_ident
+        - group: apps
+          kind: "*"
+          jqPathExpressions:
+            - .spec.template.spec.hostUsers
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - '{{ printf "%s=%s" "ServerSideApply" (dig "serverSideApply" "false" . | toString) }}'

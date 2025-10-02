@@ -1,0 +1,20 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: lapi-credentials
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: gitlab-secret-store
+  target:
+    name: lapi-credentials
+    creationPolicy: Owner
+  data:
+    - secretKey: ENROLL_KEY
+      remoteRef:
+        key: crowdsec_enroll_key
+    - secretKey: BOUNCER_KEY_nginx
+      remoteRef:
+        key: crowdsec_bouncer_nginx_api_key

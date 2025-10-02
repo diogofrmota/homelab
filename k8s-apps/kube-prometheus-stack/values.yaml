@@ -1,0 +1,304 @@
+kube-prometheus-stack:
+  prometheus:
+    # ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
+    prometheusSpec:
+      # ref: https://github.com/prometheus-operator/prometheus-operator/blob/release-0.44/pkg/prometheus/promcfg.go#L180-L183
+      scrapeInterval: 15s
+
+      retention: 3d
+
+      # Watch all PrometheusRules in the cluster.
+      ruleNamespaceSelector:
+        matchLabels: {}
+      ruleSelector:
+        matchLabels: {}
+
+      # Watch all ServiceMonitors in the cluster.
+      serviceMonitorNamespaceSelector:
+        matchLabels: {}
+      serviceMonitorSelector:
+        matchLabels: {}
+
+      # Watch all PodMonitors in the cluster.
+      podMonitorSelector:
+        matchLabels: {}
+      podMonitorNamespaceSelector:
+        matchLabels: {}
+
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 1Gi
+        limits:
+          cpu: 2000m
+          memory: 2Gi
+
+      # ref: https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/user-guides/storage.md
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 10Gi
+
+      thanos:
+        {}
+        # objectStorageConfig:
+        #   key: objstore.yml
+        #   name: thanos-objstore-secret
+
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        external-dns.alpha.kubernetes.io/target: home.diogomota.pt
+        nginx.ingress.kubernetes.io/auth-url: https://$host/oauth2/auth
+        nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
+      hosts:
+        - prometheus.diogomota.pt
+      tls:
+        - secretName: prometheus-general-tls
+          hosts:
+            - prometheus.diogomota.pt
+
+    thanosService:
+      enabled: false
+
+    thanosServiceMonitor:
+      enabled: false
+
+  # ==============================================================================
+  # Grafana
+  # Default values: https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+  # ==============================================================================
+
+  grafana:
+    defaultDashboardsTimezone: Europe/Lisbon
+
+    # Required as long as Grafana's persistent volume is ReadWriteOnce.
+    # During a rolling update, the new Grafana pod would not be able to start
+    # while the old pod still holds the volume.
+    deploymentStrategy:
+      type: Recreate
+
+    serviceMonitor:
+      scrapeTimeout: 5s
+
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        cert-manager.io/issue-temporary-certificate: "true"
+        external-dns.alpha.kubernetes.io/target: home.diogomota.pt
+        nginx.ingress.kubernetes.io/auth-url: https://$host/oauth2/auth
+        nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
+        nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-Email
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "Grafana"
+        gethomepage.dev/description: "The open platform for beautiful analytics and monitoring."
+        gethomepage.dev/group: "Tooling"
+        gethomepage.dev/icon: "grafana"
+      hosts:
+        - grafana.diogomota.pt
+      tls:
+        - secretName: grafana-general-tls
+          hosts:
+            - grafana.diogomota.pt
+
+    # The oAuth2 proxy handles authentication, not Grafana.
+    grafana.ini:
+      auth:
+        disable_login_form: true
+        signout_redirect_url: "https://grafana.diogomota.pt/oauth2/sign_out"
+      auth.basic:
+        enabled: false
+      auth.proxy:
+        enabled: true
+        header_name: X-Auth-Request-Email
+        header_property: email
+        auto_sign_up: true
+      users:
+        allow_sign_up: false
+        auto_assign_org: true
+        auto_assign_org_role: Admin
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 1000m
+        memory: 512Mi
+
+    # Organise dashboards by provider, with the provider's name as the key.
+    dashboards:
+      default: # The "default" provider is defined below.
+        nginx-ingress-controller:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.48.1/deploy/grafana/dashboards/nginx.json
+        ingress-request-performance:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.48.1/deploy/grafana/dashboards/request-handling-performance.json
+        cloudnativepg:
+          gnetId: 20417
+          datasource: Prometheus
+      extra:
+        {}
+        # pihole-overview:
+        #   gnetId: 10176
+        #   datasource: Prometheus
+        # argocd-overview:
+        #   gnetId: 14584
+        #   datasource: Prometheus
+        # cert-manager-overview:
+        #   gnetId: 11001
+        #   datasource: Prometheus
+        # external-dns-overview:
+        #   gnetId: 15038
+        #   datasource: Prometheus
+        # blackbox-exporter-overview:
+        #   gnetId: 5345
+        #   datasource: Prometheus
+        # thanos-overview:
+        #   gnetId: 12937
+        #   datasource: Thanos
+
+    # Configure dashboard providers.
+    # ref: http://docs.grafana.org/administration/provisioning/#dashboards
+    # `path` must be /var/lib/grafana/dashboards/<provider_name>
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: default
+            orgId: 1
+            folder: ""
+            type: file
+            disableDeletion: false
+            editable: true
+            allowUiUpdates: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+          - name: "extra"
+            orgId: 1
+            folder: "Extra"
+            type: file
+            disableDeletion: true
+            editable: true
+            allowUiUpdates: true
+            options:
+              path: /var/lib/grafana/dashboards/extra
+
+    persistence:
+      enabled: true
+      size: 10Gi
+      accessModes:
+        - ReadWriteOnce
+      finalizers:
+        - kubernetes.io/pvc-protection
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://kube-prometheus-stack-prometheus:9090
+            access: proxy
+          - name: Loki
+            type: loki
+            url: http://loki-gateway.loki
+            access: proxy
+
+    plugins:
+      - grafana-piechart-panel
+  # ==============================================================================
+  # Alertmanager
+  # ref: https://prometheus.io/docs/alerting/alertmanager/
+  # ==============================================================================
+
+  alertmanager:
+    enabled: true
+    alertmanagerSpec:
+      # useExistingSecret: true
+      secrets:
+        - telegram-bot-token
+      storage:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 1Gi
+
+    config:
+      receivers:
+        - name: empty
+        - name: telegram
+          telegram_configs:
+            - send_resolved: true
+              bot_token_file: /etc/alertmanager/secrets/telegram-bot-token/token
+              chat_id: 7108341107
+              message: |
+                {{ define "__custom_text_alert_list" }}{{ range . }}
+                ---
+                🪪 <b>{{ .Labels.alertname }}</b>
+                {{- if .Annotations.summary }}
+                📝 {{ .Annotations.summary }}{{ end }}
+                {{- if .Annotations.description }}
+                📖 {{ .Annotations.description }}{{ end }}
+                🏷 Labels:
+                {{ range .Labels.SortedPairs }}  <i>{{ .Name }}</i>: <code>{{ .Value }}</code>
+                {{ end }}{{ end }}
+                🛠 <a href="https://grafana.diogomota.pt">Grafana</a> 🛠
+                {{ end }}
+
+                {{ if gt (len .Alerts.Firing) 0 }}
+                🔥 Alerts Firing 🔥
+                {{ template "__custom_text_alert_list" .Alerts.Firing }}
+                {{ end }}
+                {{ if gt (len .Alerts.Resolved) 0 }}
+                ✅ Alerts Resolved ✅
+                {{ template "__custom_text_alert_list" .Alerts.Resolved }}
+                {{ end }}
+      route:
+        group_by: ["alertname"]
+        group_wait: 0s
+        receiver: telegram
+        routes:
+          - matchers:
+              - alertname=~"CNPGClusterHA.*|KubeCPUOvercommit|KubeMemoryOvercommit|Watchdog"
+            receiver: empty
+
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        external-dns.alpha.kubernetes.io/target: home.diogomota.pt
+        nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+        nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
+      hosts:
+        - alertmanager.diogomota.pt
+      paths:
+        - /
+      pathType: ImplementationSpecific
+      tls:
+        - secretName: alertmanager-tls
+          hosts:
+            - alertmanager.diogomota.pt
+
+  kubeControllerManager:
+    enabled: false
+
+  kubeEtcd:
+    enabled: false
+
+  kubeScheduler:
+    enabled: false
+
+  kubeProxy:
+    enabled: false
