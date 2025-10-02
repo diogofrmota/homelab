@@ -40,7 +40,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: git@github.com:diogofrmota/homelab.git
+        repoURL: https://github.com/diogofrmota/homelab.git
         targetRevision: HEAD
         path: "k8s-apps/{{ .name }}"
       destination:
@@ -68,4 +68,5 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - RespectIgnoreDifferences=true
+
           - '{{ printf "%s=%s" "ServerSideApply" (dig "serverSideApply" "false" . | toString) }}'
