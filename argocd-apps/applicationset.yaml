@@ -27,7 +27,7 @@ spec:
           #- name: loki
           - name: metallb
           - name: oauth2-proxy
-          - name: pihole
+          #- name: pihole
           - name: tailscale-operator
 
   template:
@@ -70,4 +70,5 @@ spec:
           - RespectIgnoreDifferences=true
 
           - '{{ printf "%s=%s" "ServerSideApply" (dig "serverSideApply" "false" . | toString) }}'
+
 
