@@ -1,0 +1,14 @@
+ingress-nginx:
+  controller:
+    service:
+      type: LoadBalancer
+      externalTrafficPolicy: Local
+      annotations:
+        external-dns.alpha.kubernetes.io/hostname: "*.diogomota.pt"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
