@@ -16,14 +16,14 @@ spec:
           - appName: cert-manager
             namespace: cert-manager
             wave: "2"
-          - appName: tailscale
-            namespace: tailscale
-            wave: "3"
-          - appName: kube-prometheus-stack
-            namespace: kube-prometheus-stack
-            wave: "4"
           - appName: argocd
             namespace: argocd
+            wave: "3"
+          - appName: tailscale
+            namespace: tailscale
+            wave: "4"
+          - appName: kube-prometheus-stack
+            namespace: kube-prometheus-stack
             wave: "5"
           - appName: pihole
             namespace: pihole
