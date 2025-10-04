@@ -1,6 +1,6 @@
 pihole:
   image:
-    tag: 2024.11
+    tag: 2025.08.0
 
   service:
     http:
@@ -55,4 +55,5 @@ pihole:
       memory: 128Mi
     limits:
       cpu: 500m
+
       memory: 256Mi
