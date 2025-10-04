@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications
+spec:
+  generators:
+    - list:
+        elements:
+          - name: metallb
+            wave: "0"
+          - name: ingress-nginx
+            wave: "1"
+          - name: cert-manager
+            wave: "2"
+          - name: tailscale
+            wave: "3"
+          - name: kube-prometheus-stack
+            wave: "4"
+          - name: argocd
+            wave: "5"
+          - name: pihole
+            wave: "6"
+  template:
+    metadata:
+      name: "{{ .name }}"
+      annotations:
+        argocd.argoproj.io/sync-wave: '{{ .wave }}'
+        argocd.argoproj.io/manifest-generate-paths: "."
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/diogofrmota/homelab.git
+        targetRevision: HEAD
+        path: "k8s-apps/{{ .name }}"
+      destination:
+        name: in-cluster
+        namespace: '{{ default .name (dig "namespace" "" .) }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - RespectIgnoreDifferences=true
+          - '{{ printf "%s=%s" "ServerSideApply" (dig "serverSideApply" "false" . | toString) }}'

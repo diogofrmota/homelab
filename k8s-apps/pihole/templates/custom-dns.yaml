@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-custom-dns
+  namespace: pihole
+data:
+  custom.list: |
+    192.168.1.210 argocd.diogomota.pt
+    192.168.1.210 grafana.diogomota.pt
+    192.168.1.210 prometheus.diogomota.pt
+    192.168.1.210 alertmanager.diogomota.pt
+    192.168.1.210 pihole.diogomota.pt

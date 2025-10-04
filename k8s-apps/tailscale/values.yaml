@@ -1,0 +1,18 @@
+tailscale-operator:
+  operatorConfig:
+    hostname: k8s-cluster
+  
+  oauth:
+    clientId:
+      valueFrom:
+        secretKeyRef:
+          name: tailscale-oauth
+          key: client-id
+    clientSecret:
+      valueFrom:
+        secretKeyRef:
+          name: tailscale-oauth
+          key: client-secret
+
+  apiServerProxyConfig:
+    mode: true

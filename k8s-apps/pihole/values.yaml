@@ -1,0 +1,58 @@
+pihole:
+  image:
+    tag: 2024.11
+
+  service:
+    http:
+      port: 80
+    https:
+      port: 443
+    dns:
+      port: 53
+      type: LoadBalancer
+
+  persistence:
+    enabled: true
+    size: 2Gi
+
+  extraVolumes:
+    - name: custom-dns
+      configMap:
+        name: pihole-custom-dns
+  extraVolumeMounts:
+    - name: custom-dns
+      mountPath: /etc/pihole/custom.list
+      subPath: custom.list
+
+  env:
+    TZ: "Europe/Lisbon"
+    WEBPASSWORD:
+      valueFrom:
+          secretKeyRef:
+            name: pihole-password
+            key: password
+    DNS1: "1.1.1.1"
+    DNS2: "1.0.0.1"
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - host: pihole.diogomota.pt
+        paths:
+          - path: /
+            pathType: Prefix
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    tls:
+      - secretName: pihole-tls
+        hosts:
+          - pihole.diogomota.pt
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi

@@ -1,0 +1,24 @@
+argo-cd:
+  server:
+    service:
+      type: ClusterIP
+      ports:
+        - port: 443
+          targetPort: 8080
+          protocol: TCP
+          name: https
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - argocd.diogomota.pt
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      tls:
+        - secretName: argocd-tls
+          hosts:
+            - argocd.diogomota.pt
+  configs:
+    params:
+      server.insecure: false
