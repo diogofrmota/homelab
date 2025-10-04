@@ -2,44 +2,49 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: applications
+  namespace: argocd
 spec:
   generators:
     - list:
         elements:
-          - name: metallb
+          - appName: metallb
+            namespace: metallb
             wave: "0"
-          - name: ingress-nginx
+          - appName: ingress-nginx
+            namespace: ingress-nginx  
             wave: "1"
-          - name: cert-manager
+          - appName: cert-manager
+            namespace: cert-manager
             wave: "2"
-          - name: tailscale
+          - appName: tailscale
+            namespace: tailscale
             wave: "3"
-          - name: kube-prometheus-stack
+          - appName: kube-prometheus-stack
+            namespace: kube-prometheus-stack
             wave: "4"
-          - name: argocd
+          - appName: argocd
+            namespace: argocd
             wave: "5"
-          - name: pihole
+          - appName: pihole
+            namespace: pihole
             wave: "6"
   template:
     metadata:
-      name: '{{ .name }}'
+      name: '{{appName}}'
       annotations:
-        argocd.argoproj.io/sync-wave: '{{ .wave }}'
-        argocd.argoproj.io/manifest-generate-paths: "."
+        argocd.argoproj.io/sync-wave: '{{wave}}'
     spec:
       project: default
       source:
         repoURL: https://github.com/diogofrmota/homelab.git
         targetRevision: HEAD
-        path: "k8s-apps/{{ .name }}"
+        path: k8s-apps/{{appName}}
       destination:
-        name: in-cluster
-        namespace: '{{ default .name (dig "namespace" "" .) }}'
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
         syncOptions:
-          - CreateNamespace=true
-          - RespectIgnoreDifferences=true
-
+        - CreateNamespace=true
