@@ -22,7 +22,7 @@ spec:
             wave: "6"
   template:
     metadata:
-      name: "{{ .name }}"
+      name: '{{ .name }}'
       annotations:
         argocd.argoproj.io/sync-wave: '{{ .wave }}'
         argocd.argoproj.io/manifest-generate-paths: "."
@@ -42,4 +42,5 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - RespectIgnoreDifferences=true
+
           - '{{ printf "%s=%s" "ServerSideApply" (dig "serverSideApply" "false" . | toString) }}'
