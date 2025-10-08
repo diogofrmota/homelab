@@ -9,15 +9,23 @@ pihole:
     tag: "2025.08.0@sha256:90a1412b3d3037d1c22131402bde19180d898255b584d685c84d943cf9c14821"
     pullPolicy: IfNotPresent
 
-  serviceTcp:
-    loadBalancerIP: 192.168.1.214
+  web:
     type: LoadBalancer
-    annotations: {}
-
-  serviceUdp:
-    loadBalancerIP: 192.168.1.213
+    loadBalancerIP: "192.168.1.214"
+    port: 80
+  dns:
+    tcp:
+      type: LoadBalancer
+      loadBalancerIP: "192.168.1.213"
+      port: 53
+    udp:
+      type: LoadBalancer  
+      loadBalancerIP: "192.168.1.213"
+      port: 53
+  dhcp:
     type: LoadBalancer
-    annotations: {}
+    loadBalancerIP: "192.168.1.213"
+    port: 67
 
   persistence:
     enabled: true
@@ -42,4 +50,5 @@ pihole:
       memory: 128Mi
     limits:
       cpu: 500m
+
       memory: 256Mi
