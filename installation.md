@@ -77,7 +77,8 @@ kubectl create secret generic pihole-password \
 ### Step 5: Install ArgoCD
 
 ```bash
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+cd ../../k8s-apps/argocd && helm dependency update && helm template argocd . -n argocd | kubectl apply -n argocd -f -
+kubectl apply -f ../../argocd-apps/app-of-apps.yaml -n argocd
 ```
 
 Wait for ArgoCD to be ready:
@@ -258,4 +259,5 @@ sudo update-ca-certificates
 5. Place in "Trusted Root Certification Authorities"
 
 Repeat for each service's certificate if desired.
+
 
