@@ -8,6 +8,7 @@ argo-cd:
       app.kubernetes.io/part-of: argocd
     selector:
       app.kubernetes.io/name: argocd-server
+      app.kubernetes.io/instance: argocd
     extraArgs:
       - --insecure
     ingress:
@@ -22,6 +23,12 @@ argo-cd:
           hosts:
             - argocd.homelab.local
   
+  repoServer:
+    service:
+      selector:
+        app.kubernetes.io/name: argocd-repo-server
+        app.kubernetes.io/instance: argocd
+
   configs:
     secret:
       create: false
