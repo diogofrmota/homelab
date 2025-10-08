@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - appName: metallb
+            namespace: metallb
+            wave: "0"
+          - appName: ingress-nginx
+            namespace: ingress-nginx  
+            wave: "1"
+          - appName: cert-manager
+            namespace: cert-manager
+            wave: "2"
+          - appName: argocd
+            namespace: argocd
+            wave: "3"
+          - appName: kube-prometheus-stack
+            namespace: kube-prometheus-stack
+            wave: "4"
+            dependsOn: "cert-manager"
+          - appName: pihole
+            namespace: pihole
+            wave: "5"
+  template:
+    metadata:
+      name: '{{appName}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: '{{wave}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/diogofrmota/homelab.git
+        targetRevision: HEAD
+        path: k8s-apps/{{appName}}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          jsonPointers:
+            - /spec/replicas
+

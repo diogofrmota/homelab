@@ -1,0 +1,40 @@
+pihole:
+  image:
+    tag: 2025.08.0
+
+  serviceTcp:
+    loadBalancerIP: 192.168.1.214
+    type: LoadBalancer
+    annotations: {}
+
+  serviceUdp:
+    loadBalancerIP: 192.168.1.213
+    type: LoadBalancer
+    annotations: {}
+
+  persistence:
+    enabled: true
+    size: 2Gi
+    
+  env:
+    TZ: "Europe/Lisbon"
+    WEBPASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: pihole-password
+          key: password
+    DNS1: "1.1.1.1"
+    DNS2: "1.0.0.1"
+
+  ingress:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+

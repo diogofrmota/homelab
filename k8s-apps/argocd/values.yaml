@@ -1,0 +1,41 @@
+argo-cd:
+  # repoServer resources
+  repoServer:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+  
+  server:
+    service:
+      type: ClusterIP
+    extraArgs:
+      - --insecure
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: selfsigned
+      hosts:
+        - argocd.homelab.local
+      tls:
+        - secretName: argocd-tls
+          hosts:
+            - argocd.homelab.local
+  
+  configs:
+    secret:
+      create: false
+
+  # for controller/server
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
