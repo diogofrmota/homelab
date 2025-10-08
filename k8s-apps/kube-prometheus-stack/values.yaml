@@ -1,7 +1,4 @@
 kube-prometheus-stack:
-  crds:
-    enabled: false
-    
   prometheus:
     prometheusSpec:
       scrapeInterval: 15s
@@ -185,4 +182,5 @@ kube-prometheus-stack:
   kubeProxy:
 
     enabled: false
+
 
