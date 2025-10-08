@@ -26,10 +26,10 @@ kube-prometheus-stack:
       resources:
         requests:
           cpu: 200m
-          memory: 1Gi
+          memory: 150Mi
         limits:
-          cpu: 700m
-          memory: 2Gi
+          cpu: 600m
+          memory: 400Mi
 
       storageSpec:
         volumeClaimTemplate:
@@ -180,4 +180,5 @@ kube-prometheus-stack:
     enabled: false
 
   kubeProxy:
+
     enabled: false
