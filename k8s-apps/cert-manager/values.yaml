@@ -9,15 +9,11 @@ cert-manager:
       # Disable the use of Exact PathType in Ingress resources, to work around a bug in ingress-nginx
       # https://github.com/kubernetes/ingress-nginx/issues/11176
       ACMEHTTP01IngressPathTypeExact: false
+  
   webhook:
     service:
-      ports:
-        - name: https
-          port: 443
-          targetPort: 10250
-        - name: metrics
-          port: 9402
-          targetPort: 9402
+      port: 443
+      targetPort: 10250
           
   resources:
     requests:
