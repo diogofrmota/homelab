@@ -1,58 +1,160 @@
 kube-prometheus-stack:
-  grafana:
-    enabled: true
-    admin:
-      existingSecret: grafana-admin
-      secretKey: password
-    service:
-      type: ClusterIP
-    ingress:
-      enabled: true
-      ingressClassName: nginx
-      annotations:
-        cert-manager.io/cluster-issuer: selfsigned
-      hosts:
-        - grafana.homelab.local
-      tls:
-        - secretName: grafana-tls
-          hosts:
-            - grafana.homelab.local
-    resources:
-      requests:
-        cpu: 10m
-        memory: 64Mi
-      limits:
-        cpu: 100m
-        memory: 128Mi
-
   prometheus:
-    service:
-      type: ClusterIP
+    prometheusSpec:
+      scrapeInterval: 15s
+
+      retention: 3d
+
+      # Watch all PrometheusRules in the cluster.
+      ruleNamespaceSelector:
+        matchLabels: {}
+      ruleSelector:
+        matchLabels: {}
+
+      # Watch all ServiceMonitors in the cluster.
+      serviceMonitorNamespaceSelector:
+        matchLabels: {}
+      serviceMonitorSelector:
+        matchLabels: {}
+
+      # Watch all PodMonitors in the cluster.
+      podMonitorSelector:
+        matchLabels: {}
+      podMonitorNamespaceSelector:
+        matchLabels: {}
+
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1Gi
+        limits:
+          cpu: 700m
+          memory: 2Gi
+
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 5Gi
+
+      thanos:
+        {}
+
     ingress:
       enabled: true
       ingressClassName: nginx
+
       annotations:
         cert-manager.io/cluster-issuer: selfsigned
       hosts:
         - prometheus.homelab.local
       tls:
-        - secretName: prometheus-tls
+        - secretName: prometheus-general-tls
           hosts:
             - prometheus.homelab.local
-    prometheusSpec:
-      retention: 5d
-      retentionSize: 2GB
-      resources:
-        requests:
-          cpu: 50m
-          memory: 128Mi
-        limits:
-          cpu: 200m
-          memory: 256Mi
 
-  alertmanager:
+    thanosService:
+      enabled: false
+
+    thanosServiceMonitor:
+      enabled: false
+
+  grafana:
+    admin:
+      existingSecret: grafana-admin
+      secretKey: password
+
+    defaultDashboardsTimezone: Europe/Lisbon
+
+    deploymentStrategy:
+      type: Recreate
+
+    serviceMonitor:
+      scrapeTimeout: 5s
+
     service:
       type: ClusterIP
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+
+      annotations:
+        cert-manager.io/cluster-issuer: selfsigned
+        cert-manager.io/issue-temporary-certificate: "true"
+      hosts:
+        - grafana.homelab.local
+      tls:
+        - secretName: grafana-general-tls
+          hosts:
+            - grafana.homelab.local
+
+    resources:
+      requests:
+        cpu: 20m
+        memory: 100Mi
+      limits:
+        cpu: 300m
+        memory: 300Mi
+    
+    # Configure dashboard providers.
+    # ref: http://docs.grafana.org/administration/provisioning/#dashboards
+    # `path` must be /var/lib/grafana/dashboards/<provider_name>
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: default
+            orgId: 1
+            folder: ""
+            type: file
+            disableDeletion: false
+            editable: true
+            allowUiUpdates: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+          - name: "extra"
+            orgId: 1
+            folder: "Extra"
+            type: file
+            disableDeletion: true
+            editable: true
+            allowUiUpdates: true
+            options:
+              path: /var/lib/grafana/dashboards/extra
+
+    persistence:
+      enabled: true
+      size: 5Gi
+      accessModes:
+        - ReadWriteOnce
+      finalizers:
+        - kubernetes.io/pvc-protection
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://kube-prometheus-stack-prometheus:9090
+            access: proxy
+
+    plugins:
+      - grafana-piechart-panel
+
+  alertmanager:
+    enabled: true
+    alertmanagerSpec:
+      storage:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 1Gi
+
     ingress:
       enabled: true
       ingressClassName: nginx
@@ -60,39 +162,22 @@ kube-prometheus-stack:
         cert-manager.io/cluster-issuer: selfsigned
       hosts:
         - alertmanager.homelab.local
+      paths:
+        - /
+      pathType: ImplementationSpecific
       tls:
         - secretName: alertmanager-tls
           hosts:
             - alertmanager.homelab.local
-    alertmanagerSpec:
-      resources:
-        requests:
-          cpu: 50m
-          memory: 128Mi
-        limits:
-          cpu: 200m
-          memory: 256Mi
 
-  kube-state-metrics:
-    resources:
-      requests:
-        cpu: 20m
-        memory: 64Mi
-      limits:
-        cpu: 150m
-        memory: 128Mi
+  kubeControllerManager:
+    enabled: false
 
-  prometheus-node-exporter:
-    resources:
-      requests:
-        cpu: 10m
-        memory: 32Mi
-      limits:
-        cpu: 100m
-        memory: 64Mi
+  kubeEtcd:
+    enabled: false
 
-  defaultRules:
-    rules:
-      etcd: false
-      kubeScheduler: false
-      kubeControllerManager: false
+  kubeScheduler:
+    enabled: false
+
+  kubeProxy:
+    enabled: false

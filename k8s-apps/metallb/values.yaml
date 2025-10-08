@@ -1,21 +1,15 @@
 metallb:
-  speaker:
-    tolerations:
-      - key: "node-role.kubernetes.io/control-plane"
-        operator: "Exists"
-        effect: "NoSchedule"
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-        effect: "NoSchedule"
-  controller:
-    tolerations:
-      - key: "node-role.kubernetes.io/control-plane"
-        operator: "Exists"
-        effect: "NoSchedule"
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-        effect: "NoSchedule"
-
-ipAddressPool:
-  addresses:
-    - 192.168.1.210-192.168.1.220
+  prometheus:
+    serviceAccount: kube-prometheus-stack-prometheus
+    namespace: kube-prometheus-stack
+    podMonitor:
+      enabled: true
+    prometheusRule:
+      enabled: true
+  frr:
+    enabled: false
+addressPools:
+  - name: default
+    autoassign: true
+    addresses:
+      - 192.168.1.210-192.168.1.225

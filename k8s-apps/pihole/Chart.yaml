@@ -3,8 +3,6 @@ name: pihole
 description: Network-wide ad blocker
 type: application
 version: 0.1.0
-appVersion: 2025.08.0
-
 dependencies:
   - name: pihole
     repository: https://mojo2600.github.io/pihole-kubernetes

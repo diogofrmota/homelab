@@ -1,42 +1,114 @@
 argo-cd:
-  server:
-    service:
-      type: ClusterIP
-    serviceLabels:
-      app.kubernetes.io/name: argocd-server
-      app.kubernetes.io/component: server
-      app.kubernetes.io/part-of: argocd
-    selector:
-      app.kubernetes.io/name: argocd-server
-      app.kubernetes.io/instance: argocd
-    extraArgs:
-      - --insecure
-    ingress:
+  controller:
+    metrics:
       enabled: true
-      ingressClassName: nginx
-      annotations:
-        cert-manager.io/cluster-issuer: selfsigned
-      hosts:
-        - argocd.homelab.local
-      tls:
-        - secretName: argocd-tls
-          hosts:
-            - argocd.homelab.local
+      serviceMonitor:
+        enabled: true
+      rules:
+        enabled: true
+        spec:
+          - alert: ArgoCDApplicationNotSynced
+            expr: argocd_app_info{sync_status!="Synced"} != 0
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: ArgoCD application not synced (instance {{ $labels.instance }})
+              description: "Application {{ $labels.name }} run by argo is currently not in sync - Value = {{ $value }}"
+          - alert: ArgoCDApplicationUnhealthy
+            expr: argocd_app_info{health_status!~"Healthy|Suspended"} != 0
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: ArgoCD application unhealthy (instance {{ $labels.instance }})
+              description: "Application {{ $labels.name }} run by argo is currently not healthy - Value = {{ $value }}"
   
-  repoServer:
-    service:
-      selector:
-        app.kubernetes.io/name: argocd-repo-server
-        app.kubernetes.io/instance: argocd
+  resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
 
-  configs:
+  dex:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  redis:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  repoServer:
+    useEphemeralHelmWorkingDir: false
+    logLevel: warn
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    env:
+      - name: HELM_PLUGINS
+        value: /home/argocd/cmp-server/plugins
+
+    initContainers:
+      - name: helm-plugin-install
+        image: alpine/helm:3@sha256:9b9dab5f1185f02264fde67306137e658017f9d686385acaec7fbadbf156a6aa
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            helm plugin install https://github.com/aslafy-z/helm-git;
+            helm plugin install https://github.com/hypnoglow/helm-s3;
+        env:
+          - name: HELM_PLUGINS
+            value: /home/argocd/cmp-server/plugins
+        volumeMounts:
+          - mountPath: /home/argocd/cmp-server/plugins
+            name: plugins
+
+  applicationSet:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  notifications:
+    enabled: true
     secret:
       create: false
+      name: argocd-notifications-controller-secret
+    argocdUrl: https://argocd.homelab.local
+    extraEnv:
+      - name: TZ
+        value: Europe/Lisbon
 
-  resources:
-    requests:
-      cpu: 50m
-      memory: 128Mi
-    limits:
-      cpu: 200m
-      memory: 256Mi
+    metrics:
+      enabled: false
+      serviceMonitor:
+        enabled: false
+
+  server:
+    metrics:
+      enabled: false
+      serviceMonitor:
+        enabled: false
+
+    service:
+      type: ClusterIP
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: selfsigned
+        cert-manager.io/issue-temporary-certificate: "true"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      pathType: ImplementationSpecific
+      hostname:
+        argocd.homelab.local
+      tls: true
+      ingressClassName: nginx
+      https: true

@@ -1,11 +1,9 @@
 ingress-nginx:
   controller:
+    replicaCount: 1
     service:
       type: LoadBalancer
-      loadBalancerIP: 192.168.1.210
-    config:
-      ssl-protocols: TLSv1.2 TLSv1.3
-      ssl-ciphers: ECDHE-RSA-AES128-GCM-SHA256,ECDHE-RSA-AES256-GCM-SHA384
+      loadBalancerIP: "192.168.1.210"
     resources:
       requests:
         cpu: 100m
@@ -13,3 +11,25 @@ ingress-nginx:
       limits:
         cpu: 500m
         memory: 256Mi
+
+    allowSnippetAnnotations: "true"
+
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+    topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: '{{ include "ingress-nginx.name" . }}'
+            app.kubernetes.io/instance: "{{ .Release.Name }}"
+            app.kubernetes.io/component: controller
+        matchLabelKeys:
+          - pod-template-hash
+        topologyKey: kubernetes.io/hostname
+        maxSkew: 1
+        whenUnsatisfiable: ScheduleAnyway
+  ingress:
+    options:
+      allow-snippet-annotations: "true"
