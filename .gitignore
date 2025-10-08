@@ -1,2 +1,2 @@
 *.tgz
-Chart.lock
+*/Chart.lock
