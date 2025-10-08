@@ -1,37 +1,12 @@
 argo-cd:
-  # repoServer resources
-  repoServer:
-    serviceLabels:
-      app.kubernetes.io/instance: argocd  
-      app.kubernetes.io/name: argocd-repo-server
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-  controller:
-    serviceLabels:
-      app.kubernetes.io/instance: argocd
-      app.kubernetes.io/name: argocd-application-controller
-  dexServer:
-    serviceLabels:
-      app.kubernetes.io/instance: argocd
-      app.kubernetes.io/name: argocd-dex-server
-  notificationsController:
-    serviceLabels:
-      app.kubernetes.io/instance: argocd
-      app.kubernetes.io/name: argocd-notifications-controller
-  redis:
-    serviceLabels:
-      app.kubernetes.io/instance: argocd
-      app.kubernetes.io/name: argocd-redis
   server:
     service:
       type: ClusterIP
     serviceLabels:
-      app.kubernetes.io/instance: argocd
+      app.kubernetes.io/name: argocd-server
+      app.kubernetes.io/component: server
+      app.kubernetes.io/part-of: argocd
+    selector:
       app.kubernetes.io/name: argocd-server
     extraArgs:
       - --insecure
@@ -51,7 +26,6 @@ argo-cd:
     secret:
       create: false
 
-  # for controller/server
   resources:
     requests:
       cpu: 50m
@@ -59,4 +33,3 @@ argo-cd:
     limits:
       cpu: 200m
       memory: 256Mi
-

@@ -22,7 +22,6 @@ spec:
           - appName: kube-prometheus-stack
             namespace: kube-prometheus-stack
             wave: "4"
-            dependsOn: "cert-manager"
           - appName: pihole
             namespace: pihole
             wave: "5"
@@ -57,4 +56,13 @@ spec:
           kind: Deployment
           jsonPointers:
             - /spec/replicas
-
+        - group: ""
+          kind: Service
+          jsonPointers:
+            - /spec/clusterIP
+            - /spec/clusterIPs
+            - /status
+        - group: ""
+          kind: ServiceAccount  
+          jsonPointers:
+            - /secrets
