@@ -18,7 +18,6 @@ spec:
             namespace: argocd
           - name: kube-prometheus-stack
             namespace: kube-prometheus-stack
-            enableHelm: true
           - name: pihole
             namespace: pihole
   template:
@@ -32,10 +31,6 @@ spec:
         repoURL: https://github.com/diogofrmota/homelab.git
         targetRevision: HEAD
         path: "k8s-apps/{{ .name }}"
-        {{- if eq .name "kube-prometheus-stack" }}
-        kustomize:
-          enableHelm: true
-        {{- end }}
       destination:
         name: in-cluster
         namespace: '{{ default .name (dig "namespace" "" .) }}'
