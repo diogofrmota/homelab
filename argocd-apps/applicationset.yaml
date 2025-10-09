@@ -18,6 +18,7 @@ spec:
             namespace: argocd
           - name: kube-prometheus-stack
             namespace: kube-prometheus-stack
+            enableHelm: true
           - name: pihole
             namespace: pihole
   template:
