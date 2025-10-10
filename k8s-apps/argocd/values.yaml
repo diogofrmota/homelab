@@ -115,4 +115,7 @@ argo-cd:
           hosts:
             - argocd.homelab.local
       ingressClassName: nginx
-      
+  
+  configs:
+    params:
+      server.insecure: true
