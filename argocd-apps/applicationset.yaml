@@ -16,8 +16,8 @@ spec:
             namespace: cert-manager
           - name: argocd
             namespace: argocd
-          - name: kube-prometheus-stack
-            namespace: kube-prometheus-stack
+          #- name: kube-prometheus-stack
+          #  namespace: kube-prometheus-stack
           - name: pihole
             namespace: pihole
   template:
@@ -46,3 +46,4 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - RespectIgnoreDifferences=true
+          - ServerSideApply=true
