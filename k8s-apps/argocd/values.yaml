@@ -1,28 +1,29 @@
 argo-cd:
-  controller:
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
-      rules:
-        enabled: true
-        spec:
-          - alert: ArgoCDApplicationNotSynced
-            expr: argocd_app_info{sync_status!="Synced"} != 0
-            for: 15m
-            labels:
-              severity: warning
-            annotations:
-              summary: ArgoCD application not synced (instance {{ $labels.instance }})
-              description: "Application {{ $labels.name }} run by argo is currently not in sync - Value = {{ $value }}"
-          - alert: ArgoCDApplicationUnhealthy
-            expr: argocd_app_info{health_status!~"Healthy|Suspended"} != 0
-            for: 15m
-            labels:
-              severity: warning
-            annotations:
-              summary: ArgoCD application unhealthy (instance {{ $labels.instance }})
-              description: "Application {{ $labels.name }} run by argo is currently not healthy - Value = {{ $value }}"
+  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+  #controller:
+  #  metrics:
+  #    enabled: true
+  #    serviceMonitor:
+  #      enabled: true
+  #    rules:
+  #      enabled: true
+  #      spec:
+  #        - alert: ArgoCDApplicationNotSynced
+  #          expr: argocd_app_info{sync_status!="Synced"} != 0
+  #          for: 15m
+  #          labels:
+  #            severity: warning
+  #          annotations:
+  #            summary: ArgoCD application not synced (instance {{ $labels.instance }})
+  #            description: "Application {{ $labels.name }} run by argo is currently not in sync - Value = {{ $value }}"
+  #        - alert: ArgoCDApplicationUnhealthy
+  #          expr: argocd_app_info{health_status!~"Healthy|Suspended"} != 0
+  #          for: 15m
+  #          labels:
+  #            severity: warning
+  #          annotations:
+  #            summary: ArgoCD application unhealthy (instance {{ $labels.instance }})
+  #            description: "Application {{ $labels.name }} run by argo is currently not healthy - Value = {{ $value }}"
   
   resources:
       requests:
@@ -32,25 +33,28 @@ argo-cd:
         cpu: 200m
         memory: 256Mi
 
-  dex:
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
+  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+  #dex:
+  #  metrics:
+  #    enabled: true
+  #    serviceMonitor:
+  #      enabled: true
 
-  redis:
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
+  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+  #redis:
+  #  metrics:
+  #    enabled: true
+  #    serviceMonitor:
+  #      enabled: true
 
   repoServer:
     useEphemeralHelmWorkingDir: false
     logLevel: warn
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
+    #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+    #metrics:
+    #  enabled: true
+    #  serviceMonitor:
+    #    enabled: true
     env:
       - name: HELM_PLUGINS
         value: /home/argocd/cmp-server/plugins
@@ -70,11 +74,12 @@ argo-cd:
           - mountPath: /home/argocd/cmp-server/plugins
             name: plugins
 
-  applicationSet:
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
+  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+  #applicationSet:
+  #  metrics:
+  #    enabled: true
+  #    serviceMonitor:
+  #      enabled: true
 
   notifications:
     enabled: true
@@ -85,17 +90,19 @@ argo-cd:
     extraEnv:
       - name: TZ
         value: Europe/Lisbon
+    
+    #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+    #metrics:
+    #  enabled: false
+    #  serviceMonitor:
+    #    enabled: false
 
-    metrics:
-      enabled: false
-      serviceMonitor:
-        enabled: false
-
-  server:
-    metrics:
-      enabled: false
-      serviceMonitor:
-        enabled: false
+  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+  #server:
+  #  metrics:
+  #    enabled: false
+  #    serviceMonitor:
+  #      enabled: false
 
     service:
       type: ClusterIP
