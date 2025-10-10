@@ -36,13 +36,12 @@ pihole:
     
   env:
     TZ: "Europe/Lisbon"
-    WEBPASSWORD:
-      valueFrom:
-        secretKeyRef:
-          name: pihole-password
-          key: password
     DNS1: "8.8.8.8"
     DNS2: "8.8.4.4"
+
+  webPassword:
+    existingSecret: "pihole-password"
+    existingSecretKey: "password"
 
   ingress:
     enabled: false
