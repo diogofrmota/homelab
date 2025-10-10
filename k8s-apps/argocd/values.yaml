@@ -25,14 +25,6 @@ argo-cd:
   #            summary: ArgoCD application unhealthy (instance {{ $labels.instance }})
   #            description: "Application {{ $labels.name }} run by argo is currently not healthy - Value = {{ $value }}"
   
-  resources:
-      requests:
-        cpu: 50m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
-
   #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
   #dex:
   #  metrics:
@@ -115,6 +107,13 @@ argo-cd:
           hosts:
             - argocd.homelab.local
       ingressClassName: nginx
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
   
   configs:
     params:
