@@ -1,52 +1,7 @@
 argo-cd:
-  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-  #controller:
-  #  metrics:
-  #    enabled: true
-  #    serviceMonitor:
-  #      enabled: true
-  #    rules:
-  #      enabled: true
-  #      spec:
-  #        - alert: ArgoCDApplicationNotSynced
-  #          expr: argocd_app_info{sync_status!="Synced"} != 0
-  #          for: 15m
-  #          labels:
-  #            severity: warning
-  #          annotations:
-  #            summary: ArgoCD application not synced (instance {{ $labels.instance }})
-  #            description: "Application {{ $labels.name }} run by argo is currently not in sync - Value = {{ $value }}"
-  #        - alert: ArgoCDApplicationUnhealthy
-  #          expr: argocd_app_info{health_status!~"Healthy|Suspended"} != 0
-  #          for: 15m
-  #          labels:
-  #            severity: warning
-  #          annotations:
-  #            summary: ArgoCD application unhealthy (instance {{ $labels.instance }})
-  #            description: "Application {{ $labels.name }} run by argo is currently not healthy - Value = {{ $value }}"
-  
-  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-  #dex:
-  #  metrics:
-  #    enabled: true
-  #    serviceMonitor:
-  #      enabled: true
-
-  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-  #redis:
-  #  metrics:
-  #    enabled: true
-  #    serviceMonitor:
-  #      enabled: true
-
   repoServer:
     useEphemeralHelmWorkingDir: false
     logLevel: warn
-    #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-    #metrics:
-    #  enabled: true
-    #  serviceMonitor:
-    #    enabled: true
     env:
       - name: HELM_PLUGINS
         value: /home/argocd/cmp-server/plugins
@@ -66,32 +21,6 @@ argo-cd:
           - mountPath: /home/argocd/cmp-server/plugins
             name: plugins
 
-  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-  #applicationSet:
-  #  metrics:
-  #    enabled: true
-  #    serviceMonitor:
-  #      enabled: true
-
-  notifications:
-    enabled: true
-    secret:
-      create: false
-      name: argocd-notifications-controller-secret
-    argocdUrl: https://argocd.homelab.local
-    extraEnv:
-      - name: TZ
-        value: Europe/Lisbon
-
-    #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-    #metrics:
-    #  enabled: false
-    #    serviceMonitor:
-    #      enabled: false
-
-  server:
-    service:
-      type: ClusterIP
     ingress:
       enabled: true
       annotations:
@@ -99,18 +28,31 @@ argo-cd:
         cert-manager.io/issue-temporary-certificate: "true"
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "ArgoCD"
+        gethomepage.dev/description: "CD for Kubernetes."
+        gethomepage.dev/group: "Tooling"
+        gethomepage.dev/icon: "argocd"
       pathType: ImplementationSpecific
-      hosts:
-        - argocd.homelab.local
-      tls:
-        - secretName: argocd-server-tls
-          hosts:
-            - argocd.homelab.local
+      hostname:
+        argocd.homelab.local
+      tls: true
       ingressClassName: nginx
-    resources:
-      requests:
-        cpu: 50m
-        memory: 128Mi
-      limits:
-        cpu: 200m
-        memory: 256Mi
+      https: true
+  configs:
+    cm:
+      resource.compareoptions: |
+        ignoreAggregatedRoles: true
+        ignoreResourceStatusField: all
+
+      admin.enabled: "true"
+
+    rbac:
+      policy.default: role:readonly
+      policy.csv: |
+        g, diogofrmota@gmail.com, role:admin
+      scopes: "[groups, email]"
+
+    secret:
+      createSecret: true
+      githubSecret: "$argo-webhook-secret:secret" #UPDATE

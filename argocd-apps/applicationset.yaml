@@ -8,18 +8,12 @@ spec:
   generators:
     - list:
         elements:
-          - name: metallb
-            namespace: metallb
-          - name: ingress-nginx
-            namespace: ingress-nginx  
-          - name: cert-manager
-            namespace: cert-manager
           - name: argocd
-            namespace: argocd
-          #- name: kube-prometheus-stack
-          #  namespace: kube-prometheus-stack
-          - name: pihole
-            namespace: pihole
+          - name: cert-manager
+          - name: homepage
+          - name: ingress-nginx
+          - name: metallb
+          
   template:
     metadata:
       name: "{{ .name }}"
@@ -31,9 +25,6 @@ spec:
         repoURL: https://github.com/diogofrmota/homelab.git
         targetRevision: HEAD
         path: "k8s-apps/{{ .name }}"
-        helm:
-          valueFiles:
-            - values.yaml
       destination:
         name: in-cluster
         namespace: '{{ default .name (dig "namespace" "" .) }}'
@@ -49,4 +40,3 @@ spec:
         syncOptions:
           - CreateNamespace=true
           - RespectIgnoreDifferences=true
-          - ServerSideApply=true
