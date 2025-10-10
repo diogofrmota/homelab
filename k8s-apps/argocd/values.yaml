@@ -103,7 +103,7 @@ argo-cd:
       hosts:
         - argocd.homelab.local
       tls:
-        - secretName: argocd-tls
+        - secretName: argocd-server-tls
           hosts:
             - argocd.homelab.local
       ingressClassName: nginx
@@ -114,7 +114,3 @@ argo-cd:
       limits:
         cpu: 200m
         memory: 256Mi
-  
-  configs:
-    params:
-      server.insecure: true
