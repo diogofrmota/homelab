@@ -90,19 +90,14 @@ argo-cd:
     extraEnv:
       - name: TZ
         value: Europe/Lisbon
-    
+
     #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
     #metrics:
     #  enabled: false
-    #  serviceMonitor:
-    #    enabled: false
+    #    serviceMonitor:
+    #      enabled: false
 
-  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
   server:
-  #  metrics:
-  #    enabled: false
-  #    serviceMonitor:
-  #      enabled: false
     service:
       type: ClusterIP
     ingress:
