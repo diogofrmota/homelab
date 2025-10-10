@@ -1,4 +1,4 @@
-{{- if .Values.server.ingress.enabled }}
+{{- if and .Values.server.ingress .Values.server.ingress.enabled }}
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
