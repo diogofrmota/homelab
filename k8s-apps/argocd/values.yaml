@@ -104,18 +104,18 @@ argo-cd:
   #    serviceMonitor:
   #      enabled: false
 
-    service:
-      type: ClusterIP
-    ingress:
-      enabled: true
-      annotations:
-        cert-manager.io/cluster-issuer: selfsigned
-        cert-manager.io/issue-temporary-certificate: "true"
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-      pathType: ImplementationSpecific
-      hostname:
-        argocd.homelab.local
-      tls: true
-      ingressClassName: nginx
-      https: true
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: selfsigned
+      cert-manager.io/issue-temporary-certificate: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    pathType: ImplementationSpecific
+    hostname:
+      argocd.homelab.local
+    tls: true
+    ingressClassName: nginx
+    https: true
