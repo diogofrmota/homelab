@@ -14,10 +14,11 @@ ingress-nginx:
 
     allowSnippetAnnotations: "true"
 
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
+    #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+    #metrics:
+    #  enabled: true
+    #  serviceMonitor:
+    #    enabled: true
 
     topologySpreadConstraints:
       - labelSelector:

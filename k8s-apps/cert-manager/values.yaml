@@ -1,9 +1,10 @@
 cert-manager:
   installCRDs: true
-  prometheus:
-    enabled: true
-    servicemonitor:
-      enabled: true
+  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
+  #prometheus:
+  #  enabled: true
+  #  servicemonitor:
+  #    enabled: true
   config:
     featureGates:
       # Disable the use of Exact PathType in Ingress resources, to work around a bug in ingress-nginx
@@ -21,4 +22,3 @@ cert-manager:
 clusterIssuers:
   enabled: true
   email: diogofrmota@gmail.com
-
