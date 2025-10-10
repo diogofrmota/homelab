@@ -120,3 +120,4 @@ argo-cd:
           hosts:
             - argocd.homelab.local
       ingressClassName: nginx
+      
