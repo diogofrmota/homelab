@@ -10,7 +10,6 @@ spec:
         elements:
           - name: argocd
           - name: cert-manager
-          - name: homepage
           - name: ingress-nginx
           - name: metallb
           
