@@ -2,19 +2,22 @@ argo-cd:
   server:
     ingress:
       enabled: true
+      ingressClassName: nginx
+      hosts: 
+        - argocd.homelab.local
+      paths: 
+        - /
       annotations:
         cert-manager.io/cluster-issuer: selfsigned
-        cert-manager.io/issue-temporary-certificate: "true"
-        external-dns.alpha.kubernetes.io/target: home.homelab.local
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-      ingressClassName: nginx
-      hosts:
-        - host: argocd.homelab.local
-          paths:
-            - path: /
-              pathType: Prefix
       tls:
         - secretName: argocd-server-tls
           hosts:
-          - argocd.homelab.local
+            - argocd.homelab.local
+  config:
+    url: https://argocd.homelab.local
+  
+  global:
+    image:
+      tag: "v3.1.8"
