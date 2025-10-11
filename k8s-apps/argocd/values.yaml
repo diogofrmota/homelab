@@ -8,11 +8,6 @@ argo-cd:
         external-dns.alpha.kubernetes.io/target: home.homelab.local
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-        gethomepage.dev/enabled: "true"
-        gethomepage.dev/name: "ArgoCD"
-        gethomepage.dev/description: "CD for Kubernetes."
-        gethomepage.dev/group: "Tooling"
-        gethomepage.dev/icon: "argocd"
       ingressClassName: nginx
       hosts:
         - host: argocd.homelab.local

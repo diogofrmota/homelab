@@ -38,7 +38,6 @@ Copy the content and save it locally as `~/.kube/config`, then replace `127.0.0.
 # Update dependencies for each chart
 cd k8s-apps/argocd && helm dependency update && cd ../..
 cd k8s-apps/cert-manager && helm dependency update && cd ../..
-cd k8s-apps/homepage && helm dependency update && cd ../..
 cd k8s-apps/ingress-nginx && helm dependency update && cd ../..
 cd k8s-apps/metallb && helm dependency update && cd ../..
 ```
@@ -47,7 +46,7 @@ cd k8s-apps/metallb && helm dependency update && cd ../..
 
 ```bash
 kubectl create namespace argocd
-cd ./k8s-apps/argocd && helm template argocd . -n argocd | kubectl apply -n argocd -f -
+cd k8s-apps/argocd && helm template argocd . -n argocd | kubectl apply -n argocd -f -
 ```
 
 Wait for ArgoCD to be ready:
@@ -63,7 +62,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 ### Step 5: Deploy the App of Apps
 
 ```bash
-kubectl apply -f argocd-apps/app-of-apps.yaml
+kubectl apply -f argocd-apps/app-of-apps.yaml -n argocd
 ```
 
 ### Step 6: Monitor deployment progress
@@ -80,7 +79,6 @@ Wait for all applications to show "Synced" and "Healthy" status.
 1. **Configure /etc/hosts**:
      ```bash
      argocd.homelab.local       → 192.168.1.210
-     apps.homelab.local     → 192.168.1.210
      ```
 
 ### Step 8: Access Your Applications
@@ -89,7 +87,6 @@ Once certificates are issued, access via domains:
 
 **Local Network Access (HTTPS with self-signed certificates):**
 - ArgoCD: https://argocd.homelab.local
-- Homepage: https://apps.homelab.local
 
 **Note**: Your browser will warn about self-signed certificates. This is normal and safe for local use. Click "Advanced" → "Accept Risk and Continue" (or similar).
 

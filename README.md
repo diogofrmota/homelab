@@ -12,14 +12,12 @@
 - Domain-based access on local network with `ingress-nginx`
 - Self-signed HTTPS certificates with `cert-manager`
 - Load balancing with `metallb` for bare metal
-- Homepage to access the different apps `Homepage`
 
 ## Access
 
 | Service | URL | IP / Notes |
 |----------|-----|------------|
 | ArgoCD | https://argocd.homelab.local | Via ingress (192.168.1.210) |
-| Homepage | https://apps.homelab.local | Via ingress (192.168.1.210) |
 
 > **DNS Configuration Required:**  
 > Configure Pi-hole, `/etc/hosts`, or router to resolve `*.homelab.local` → `192.168.1.210`.
@@ -34,7 +32,6 @@ homelab/
 └── k8s-apps/                    # Helm charts for applications
     ├── argocd/                  # ArgoCD (GitOps controller)
     ├── cert-manager/            # TLS certificate management
-    ├── homepage/                # Homepage app
     ├── ingress-nginx/           # Nginx ingress controller
     └── metallb/                 # Load balancer for bare metal
 ```
@@ -46,7 +43,6 @@ Applications deploy via ArgoCD in waves:
 2. **Ingress-Nginx** – HTTP/HTTPS routing  
 3. **Cert-Manager** – installs CRDs + self-signed issuer  
 4. **ArgoCD** – GitOps controller (self-managed)  
-5. **Homepage** – Adicionar
 
 ## Architecture
 
