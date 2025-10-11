@@ -9,9 +9,12 @@ argo-cd:
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       ingressClassName: nginx
-      pathType: ImplementationSpecific
-      hostname:
-        argocd.homelab.local
-      tls: true
-      ingressClassName: nginx
-      https: true
+      hosts:
+        - host: argocd.homelab.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: argocd-server-tls
+          hosts:
+          - argocd.homelab.local
