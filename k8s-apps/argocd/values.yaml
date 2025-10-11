@@ -1,31 +1,11 @@
 argo-cd:
-  repoServer:
-    useEphemeralHelmWorkingDir: false
-    logLevel: warn
-    env:
-      - name: HELM_PLUGINS
-        value: /home/argocd/cmp-server/plugins
-
-    initContainers:
-      - name: helm-plugin-install
-        image: alpine/helm:3@sha256:9b9dab5f1185f02264fde67306137e658017f9d686385acaec7fbadbf156a6aa
-        command: ["/bin/sh", "-c"]
-        args:
-          - |
-            helm plugin install https://github.com/aslafy-z/helm-git;
-            helm plugin install https://github.com/hypnoglow/helm-s3;
-        env:
-          - name: HELM_PLUGINS
-            value: /home/argocd/cmp-server/plugins
-        volumeMounts:
-          - mountPath: /home/argocd/cmp-server/plugins
-            name: plugins
-
+  server:
     ingress:
       enabled: true
       annotations:
         cert-manager.io/cluster-issuer: selfsigned
         cert-manager.io/issue-temporary-certificate: "true"
+        external-dns.alpha.kubernetes.io/target: home.homelab.local
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
         gethomepage.dev/enabled: "true"
@@ -33,26 +13,13 @@ argo-cd:
         gethomepage.dev/description: "CD for Kubernetes."
         gethomepage.dev/group: "Tooling"
         gethomepage.dev/icon: "argocd"
-      pathType: ImplementationSpecific
-      hostname:
-        argocd.homelab.local
-      tls: true
       ingressClassName: nginx
-      https: true
-  configs:
-    cm:
-      resource.compareoptions: |
-        ignoreAggregatedRoles: true
-        ignoreResourceStatusField: all
-
-      admin.enabled: "true"
-
-    rbac:
-      policy.default: role:readonly
-      policy.csv: |
-        g, diogofrmota@gmail.com, role:admin
-      scopes: "[groups, email]"
-
-    secret:
-      createSecret: true
-      githubSecret: "$argo-webhook-secret:secret" #UPDATE
+      hosts:
+        - host: argocd.homelab.local
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: argocd-tls
+          hosts:
+          - argocd.homelab.local

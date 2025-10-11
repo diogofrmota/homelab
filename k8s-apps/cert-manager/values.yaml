@@ -1,24 +1,2 @@
 cert-manager:
   installCRDs: true
-  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-  #prometheus:
-  #  enabled: true
-  #  servicemonitor:
-  #    enabled: true
-  config:
-    featureGates:
-      # Disable the use of Exact PathType in Ingress resources, to work around a bug in ingress-nginx
-      # https://github.com/kubernetes/ingress-nginx/issues/11176
-      ACMEHTTP01IngressPathTypeExact: false
-          
-  resources:
-    requests:
-      cpu: 10m
-      memory: 32Mi
-    limits:
-      cpu: 100m
-      memory: 128Mi
-
-clusterIssuers:
-  enabled: true
-  email: diogofrmota@gmail.com

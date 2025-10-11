@@ -1,14 +1,6 @@
 metallb:
-  #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-  #prometheus:
-  #  serviceAccount: kube-prometheus-stack-prometheus
-  #  namespace: kube-prometheus-stack
-  #  podMonitor:
-  #    enabled: true
-  #  prometheusRule:
-  #    enabled: true
   frr:
-    enabled: false
+      enabled: false
 addressPools:
   - name: default
     autoassign: true

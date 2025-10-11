@@ -4,21 +4,8 @@ ingress-nginx:
     service:
       type: LoadBalancer
       loadBalancerIP: "192.168.1.210"
-    resources:
-      requests:
-        cpu: 100m
-        memory: 128Mi
-      limits:
-        cpu: 500m
-        memory: 256Mi
 
     allowSnippetAnnotations: "true"
-
-    #REMOVED TEMPORARILY - ADD WHEN KUBE-PROMETHEUS-STACK IS ADDED
-    #metrics:
-    #  enabled: true
-    #  serviceMonitor:
-    #    enabled: true
 
     topologySpreadConstraints:
       - labelSelector:
