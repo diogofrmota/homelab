@@ -46,7 +46,7 @@ cd k8s-apps/metallb && helm dependency update && cd ../..
 
 ```bash
 kubectl create namespace argocd
-cd k8s-apps/argocd && helm template argocd . -n argocd | kubectl apply -n argocd -f -
+cd k8s-apps/argocd && helm install argocd . -n argocd -f values.yaml | kubectl apply -n argocd -f -
 ```
 
 Wait for ArgoCD to be ready:
