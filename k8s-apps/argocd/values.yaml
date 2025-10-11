@@ -15,6 +15,8 @@ argo-cd:
             - path: /
               pathType: Prefix
       tls:
-        - secretName: argocd-tls
+        - secretName: argocd-server-tls
           hosts:
           - argocd.homelab.local
+  config:
+      url: https://argocd.homelab.local
