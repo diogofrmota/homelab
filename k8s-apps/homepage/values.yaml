@@ -1,37 +1,23 @@
-homepage:
-  image:
-    repository: ghcr.io/gethomepage/homepage
-    tag: v1.5.0@sha256:e7fc26f914cf5e7dcd6c566e24ca218addb879aa76478ad4a553b1f9ae48b1d7
-
-  enableRbac: true
-
-  serviceAccount:
-    name: ""
-    create: true
-
+app-template:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: ghcr.io/gethomepage/homepage
+            tag: v0.8.8
   service:
     main:
       ports:
         http:
           port: 3000
-
-  controller:
-    strategy: RollingUpdate
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-
+          protocol: HTTP
   ingress:
     main:
       enabled: true
+      className: nginx
       annotations:
-        gethomepage.dev/enabled: "false"
-        gethomepage.dev/name: "Homepage"
-        gethomepage.dev/description: "A modern, secure, highly customizable application dashboard."
-        gethomepage.dev/group: "A New Group"
-        gethomepage.dev/icon: "homepage"
         cert-manager.io/cluster-issuer: selfsigned
-      ingressClassName: "nginx"
       hosts:
         - host: apps.homelab.local
           paths:
@@ -42,33 +28,42 @@ homepage:
           hosts:
           - apps.homelab.local
 
-  config:
-    widgets:
-      - resources:
-          backend: resources
-          expanded: true
-          cpu: true
-          memory: true
-      - search:
-          provider: duckduckgo
-          target: _blank
-      - kubernetes:
-          cluster:
-            show: true
-            cpu: true
-            memory: true
-            showLabel: true
-            label: "cluster"
-          nodes:
-            show: true
-            cpu: true
-            memory: true
-            showLabel: true
-    kubernetes:
-      mode: cluster
-
   persistence:
-    logs:
+    config:
       enabled: true
-      type: emptyDir
-      mountPath: /app/config/logs
+      type: configMap
+      name: homepage-config
+      globalMounts:
+        - path: /app/config/settings.yaml
+          subPath: settings.yaml
+        - path: /app/config/widgets.yaml
+          subPath: widgets.yaml
+        - path: /app/config/services.yaml
+          subPath: services.yaml
+        - path: /app/config/bookmarks.yaml
+          subPath: bookmarks.yaml
+  configMaps:
+    config:
+      enabled: true
+      data:
+        settings.yaml: |
+          background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+          cardBlur: md
+          theme: dark
+          headerStyle: boxed
+          hideVersion: true
+        widgets.yaml: |
+          - search:
+              provider: google
+              target: _blank
+        services.yaml: |
+          - Development:
+            - ArgoCD:
+                href: https://argocd.khuedoan.com
+                description: Continuous deployment
+                icon: argocd.svg
+        bookmarks.yaml: |
+          - Homelab:
+            - Public homelab repository:
+              - href: https://github.com/diogofrmota/homelab
+                icon: github.svg

@@ -4,6 +4,6 @@ description: A highly customizable homepage (or startpage / application dashboar
 type: application
 version: 0.1.0
 dependencies:
-  - name: homepage
-    repository: https://jameswynn.github.io/helm-charts
-    version: 2.1.0
+  - name: app-template
+    version: 2.6.0
+    repository: https://bjw-s-labs.github.io/helm-charts
