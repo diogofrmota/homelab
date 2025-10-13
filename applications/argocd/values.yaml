@@ -17,31 +17,10 @@ argo-cd:
       gethomepage.dev/group: "Tooling"
       gethomepage.dev/icon: "argocd"
 
-  controller:
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
-
-  dex:
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
-
-  redis:
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
-
   repoServer:
     useEphemeralHelmWorkingDir: false
     logLevel: warn
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
+
     env:
       - name: HELM_PLUGINS
         value: /home/argocd/cmp-server/plugins
@@ -61,24 +40,7 @@ argo-cd:
           - mountPath: /home/argocd/cmp-server/plugins
             name: plugins
 
-  applicationSet:
-    metrics:
-      enabled: true
-      serviceMonitor:
-        enabled: true
-
   server:
-    metrics:
-      enabled: false
-      serviceMonitor:
-        enabled: false
-
-      resource.compareoptions: |
-        ignoreAggregatedRoles: true
-        ignoreResourceStatusField: all
-
-      admin.enabled: "true"
-
     rbac:
       policy.default: role:readonly
       policy.csv: |
