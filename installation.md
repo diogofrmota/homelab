@@ -74,31 +74,40 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.33.3+k3s1" \
 kubectl get nodes -o wide
 ```
 
-# External-Secrets Setup
+# Secrets Setup
 
-Create the following secrets in GitLab (Project: 74905325):
-
-- `argocd_webhook_secret` - Secret for ArgoCD webhook authentication
-- `cloudflare_credentials_cloudflare_api_token` - Cloudflare API token for DNS challenges
-- `gitlab_access_token` - GitLab access token for external-secrets operator
-
-The external-secrets operator will automatically sync these secrets:
-- `gitlab-secret` in `external-secrets` namespace (for GitLab access)
 - `cloudflare-api-token` in `cert-manager` namespace (for DNS challenges)
 - `argo-webhook-secret` in `argocd` namespace (for webhook authentication)
 
 ```bash
-kubectl create ns external-secrets
-kubectl apply -f -
+kubectl create ns cert-manager
+
+# Create this secret
 apiVersion: v1
 kind: Secret
 metadata:
-  name: gitlab-secret
-  namespace: external-secrets
+  name: cloudflare-api-token
+  namespace: cert-manager
 type: Opaque
 stringData:
-  token: xxx
-# Token was saved outside of this repository
+  api-token: YOUR_CLOUDFLARE_API_TOKEN_HERE
+
+kubectl create ns argocd
+
+# Create this secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argo-webhook-secret
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+    app.kubernetes.io/part-of: argocd
+type: Opaque
+stringData:
+  secret: YOUR_WEBHOOK_SECRET_VALUE_HERE
+
+# Tokens was saved outside of this repository
 ```
 
 # Helm Chart Setup
@@ -108,23 +117,24 @@ stringData:
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 helm version
 
-cd ../../applications/external-secrets && helm dependency update && helm template external-secrets -n external-secrets . | kubectl apply -n external-secrets
-cd ../../applications/argocd && helm dependency update
 cd ../../applications/cert-manager && helm dependency update
 cd ../../applications/homepage && helm dependency update
 cd ../../applications/ingress-nginx && helm dependency update
 cd ../../applications/kube-prometheus-stack && helm dependency update
 cd ../../applications/metallb && helm dependency update
+cd ../../applications/argocd && helm dependency update
 ```
 
 # GitOps Setup
 
 ```bash
 # Argo CD Bootstrap
-kubectl create namespace argocd
+helm template argocd . -n argocd | kubectl apply -n argocd -f -
 kubectl apply -f ../../gitops/app-of-apps.yaml -n argocd
+kubectl apply -f ../../gitops/applicationset.yaml -n argocd
 
 # Wait for Argo CD
 kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
