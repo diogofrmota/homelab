@@ -84,7 +84,3 @@ argo-cd:
       policy.csv: |
         g, diogofrmota@gmail.com, role:admin
       scopes: "[groups, email]"
-
-#    secret:
-#      createSecret: true
-#      githubSecret: "$argo-webhook-secret:secret"
