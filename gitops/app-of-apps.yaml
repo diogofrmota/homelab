@@ -7,8 +7,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/diogofrmota/homelab.git
-    path: argocd-apps/
+    repoURL: https://github.com/diogofrmota/homelab
+    path: applications/
     targetRevision: HEAD
   destination:
     name: in-cluster
@@ -16,6 +16,7 @@ spec:
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true
     automated:
       prune: true
       selfHeal: true

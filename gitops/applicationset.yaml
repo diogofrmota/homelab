@@ -10,9 +10,12 @@ spec:
         elements:
           - name: argocd
           - name: cert-manager
+          - name: external-secrets
+          - name: homepage
           - name: ingress-nginx
+          - name: kube-prometheus-stack
           - name: metallb
-          
+
   template:
     metadata:
       name: "{{ .name }}"
@@ -21,13 +24,17 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/diogofrmota/homelab.git
+        repoURL: https://github.com/diogofrmota/homelab
         targetRevision: HEAD
-        path: "k8s-apps/{{ .name }}"
+        path: "applications/{{ .name }}"
       destination:
         name: in-cluster
         namespace: '{{ default .name (dig "namespace" "" .) }}'
       ignoreDifferences:
+        - group: apiextensions.k8s.io
+          kind: CustomResourceDefinition
+          jqPathExpressions:
+            - .spec.conversion.webhook.clientConfig.caBundle
         - group: apps
           kind: "*"
           jqPathExpressions:
@@ -38,4 +45,5 @@ spec:
           selfHeal: true
         syncOptions:
           - CreateNamespace=true
+          - ServerSideApply=true
           - RespectIgnoreDifferences=true

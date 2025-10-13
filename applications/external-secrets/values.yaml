@@ -1,0 +1,174 @@
+external-secrets:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/external-secrets/external-secrets
+    pullPolicy: IfNotPresent
+    # -- The image tag to use. The default is the chart appVersion.
+    tag: ""
+
+  # -- If set, install and upgrade CRDs through helm chart.
+  installCRDs: true
+
+  crds:
+    conversion:
+      enabled: false
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  # -- If true, external-secrets will perform leader election between instances to ensure no more
+  # than one instance of external-secrets operates at a time.
+  leaderElect: false
+
+  # -- If set external secrets will filter matching
+  # Secret Stores with the appropriate controller values.
+  controllerClass: ""
+
+  # -- If set external secrets are only reconciled in the
+  # provided namespace
+  scopedNamespace: ""
+
+  # -- Specifies the number of concurrent ExternalSecret Reconciles external-secret executes at
+  # a time.
+  concurrent: 1
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created.
+    create: true
+    # -- Annotations to add to the service account.
+    annotations: {}
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template.
+    name: ""
+
+  rbac:
+    # -- Specifies whether role and rolebinding resources should be created.
+    create: true
+
+  ## -- Extra environment variables to add to container.
+  extraEnv: []
+
+  ## -- Map of extra arguments to pass to container.
+  extraArgs: {}
+
+  # -- Annotations to add to Deployment
+  deploymentAnnotations: {}
+
+  # -- Annotations to add to Pod
+  podAnnotations: {}
+
+  podLabels: {}
+
+  podSecurityContext:
+    {}
+    # fsGroup: 2000
+
+  securityContext:
+    {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  resources:
+    {}
+    # requests:
+    #   cpu: 10m
+    #   memory: 32Mi
+
+  prometheus:
+    # -- Specifies whether to expose Service resource for collecting Prometheus metrics
+    enabled: true
+    service:
+      port: 8080
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  # -- Pod priority class name.
+  priorityClassName: ""
+
+  extraObjects:
+    - apiVersion: external-secrets.io/v1
+      kind: ClusterSecretStore
+      metadata:
+        name: gitlab-secret-store
+        annotations:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+      spec:
+        provider:
+          gitlab:
+            auth:
+              SecretRef:
+                accessToken:
+                  name: gitlab-secret
+                  namespace: external-secrets
+                  key: token
+            projectID: "74905325"
+    - apiVersion: generators.external-secrets.io/v1alpha1
+      kind: ClusterGenerator
+      metadata:
+        name: password
+      spec:
+        kind: Password
+        generator:
+          passwordSpec:
+            length: 32
+            digits: 5
+            symbols: 5
+            symbolCharacters: "!@#$%^&*"
+            noUpper: false
+            allowRepeat: true
+    - apiVersion: generators.external-secrets.io/v1alpha1
+      kind: ClusterGenerator
+      metadata:
+        name: short-password
+      spec:
+        kind: Password
+        generator:
+          passwordSpec:
+            length: 12
+            symbolCharacters: "!"
+            symbols: 0
+            noUpper: false
+    - apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: k8s-secret-store
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: k8s-secret-store
+      rules:
+        - apiGroups: [""]
+          resources:
+            - secrets
+          verbs:
+            - get
+            - list
+            - watch
+        - apiGroups:
+            - authorization.k8s.io
+          resources:
+            - selfsubjectrulesreviews
+          verbs:
+            - create
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: k8s-secret-store
+      subjects:
+        - kind: ServiceAccount
+          name: k8s-secret-store
+          namespace: external-secrets
+      roleRef:
+        kind: ClusterRole
+        name: k8s-secret-store
+        apiGroup: rbac.authorization.k8s.io

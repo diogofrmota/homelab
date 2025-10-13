@@ -1,71 +1,148 @@
-# Homelab Installation Guide - Local Network with Domain Names
+# OS Installation - On each node
+1. Burn OS
+Use the official Raspberry Pi Imager tool to flash Ubuntu Server 64-bit 22.04 LTS onto your SD cards.
 
-## Installation Steps
+2. Find your IP address
 
-### Step 1: Install k3s on all nodes
-
-On the **first node** (master):
 ```bash
-curl -sfL https://get.k3s.io | sh -s - server \
-  --disable traefik \
-  --disable servicelb \
-  --write-kubeconfig-mode 644
+hostname -I
 ```
 
-Get the node token:
+2. Configure hostnames
+k3s-master        # On master node - 192.168.1.29
+k3s-worker-01     # On worker node 1 - 192.168.1.31
+k3s-worker-02     # On worker node 2 - 192.168.1.32
+
+# System configuration - On each node
+
+1. Install essential utilities
+
 ```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl wget git vim jq openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+sudo systemctl status ssh
+```
+
+2. Enable cgroups on Raspberry Pi Nodes
+
+```bash
+# Append cgroup_memory=1 cgroup_enable=memory to the end of the line. 
+sudo vim /boot/firmware/cmdline.txt
+```
+
+3. Disable Swap 
+
+```bash
+sudo swapoff -a
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sudo reboot
+```
+
+# K3s Installation
+
+1. Setup - On master node
+
+```bash
+export SETUP_NODEIP=192.168.1.29  # Your node IP
+export SETUP_CLUSTERTOKEN=S5Kwre2s2bZkaZb88B  # Strong token
+
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.33.3+k3s1" \
+  INSTALL_K3S_EXEC="--node-ip $SETUP_NODEIP \
+  --disable=servicelb,traefik \
+  K3S_TOKEN=$SETUP_CLUSTERTOKEN \
+  K3S_KUBECONFIG_MODE=644 sh -s -
+
+# Get node token
 sudo cat /var/lib/rancher/k3s/server/node-token
 ```
 
-On the **other nodes** (workers):
+2. Setup - On EACH worker node
+
 ```bash
-curl -sfL https://get.k3s.io | K3S_URL=https://[MASTER_NODE_IP]:6443 \
-  K3S_TOKEN=[NODE_TOKEN_FROM_MASTER] sh -
+export MASTER_IP=192.168.1.29  # IP of your master node
+export NODE_IP=(node_IP)    # IP of THIS worker node (192.168.1.31 and 192.168.1.32)
+export K3S_TOKEN=your-node-token # From master's node-token file
+
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.33.3+k3s1" \
+  K3S_URL="https://$MASTER_IP:6443" \
+  K3S_TOKEN=$K3S_TOKEN \
+  INSTALL_K3S_EXEC="--node-ip $NODE_IP" sh -
+
+# On the MASTER node - Verify the new node joined
+kubectl get nodes -o wide
 ```
 
-### Step 2: Configure kubectl on your local machine
+# External-Secrets Setup
 
-From the master node:
+Create the following secrets in GitLab (Project: 74905325):
+
+- `argocd_webhook_secret` - Secret for ArgoCD webhook authentication
+- `cloudflare_credentials_cloudflare_api_token` - Cloudflare API token for DNS challenges
+- `gitlab_access_token` - GitLab access token for external-secrets operator
+
+The external-secrets operator will automatically sync these secrets:
+- `gitlab-secret` in `external-secrets` namespace (for GitLab access)
+- `cloudflare-api-token` in `cert-manager` namespace (for DNS challenges)
+- `argo-webhook-secret` in `argocd` namespace (for webhook authentication)
+
 ```bash
-sudo cat /etc/rancher/k3s/k3s.yaml
+kubectl create ns external-secrets
+kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gitlab-secret
+  namespace: external-secrets
+type: Opaque
+stringData:
+  token: xxx
+# Token was saved outside of this repository
 ```
 
-Copy the content and save it locally as `~/.kube/config`, then replace `127.0.0.1` with your master node IP.
-
-### Step 3: Update Helm dependencies
+# Helm Chart Setup
 
 ```bash
-# Update dependencies for each chart
-cd k8s-apps/argocd && helm dependency update && cd ../..
-cd k8s-apps/cert-manager && helm dependency update && cd ../..
-cd k8s-apps/ingress-nginx && helm dependency update && cd ../..
-cd k8s-apps/metallb && helm dependency update && cd ../..
+# Install Helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+helm version
+
+cd ../../applications/external-secrets && helm dependency update && helm template external-secrets -n external-secrets . | kubectl apply -n external-secrets
+cd ../../applications/argocd && helm dependency update
+cd ../../applications/cert-manager && helm dependency update
+cd ../../applications/homepage && helm dependency update
+cd ../../applications/ingress-nginx && helm dependency update
+cd ../../applications/kube-prometheus-stack && helm dependency update
+cd ../../applications/metallb && helm dependency update
 ```
 
-### Step 4: Install ArgoCD
+# GitOps Setup
 
 ```bash
+# Argo CD Bootstrap
 kubectl create namespace argocd
-cd k8s-apps/argocd && helm template argocd . -n argocd | kubectl apply -n argocd -f -
+kubectl apply -f ../../gitops/app-of-apps.yaml -n argocd
+
+# Wait for Argo CD
+kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
+
+# Get initial password (change immediately!)
+ARGO_PASS=$(kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d)
+echo "Initial Argo CD password: $ARGO_PASS"
+
+# Generate a New Password:
+Use a bcrypt hash generator tool (such as https://www.browserling.com/tools/bcrypt) to create a new bcrypt hash for the password.
+Update the argocd-secret secret with the new bcrypt hash.
+kubectl -n argocd patch secret argocd-secret -p '{"stringData": { "admin.password": "$2a$10$rgDBwhzr0ygDfH6scxkdddddx3cd612Cutw1Xu1X3a.kVrRq", "admin.passwordMtime": "'$(date +%FT%T%Z)'" }}'
+
+# Fix argocd.example.com (Only if necessary)
+https://www.youtube.com/watch?v=dq3QbPp-GTA
 ```
 
-Wait for ArgoCD to be ready:
-```bash
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
-```
-
-Get the initial admin password:
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
-### Step 5: Deploy the App of Apps
-
-```bash
-kubectl apply -f argocd-apps/app-of-apps.yaml -n argocd
-```
-
-### Step 6: Monitor deployment progress
+## Monitor deployment progress
 
 Check application status:
 ```bash
@@ -78,7 +155,10 @@ Wait for all applications to show "Synced" and "Healthy" status.
 
 1. **Configure /etc/hosts**:
      ```bash
-     argocd.homelab.local       → 192.168.1.210
+     argocd.diogomota.pt       → 192.168.1.210
+     grafana.diogomota.pt      → 192.168.1.210
+     prometheus.diogomota.pt   → 192.168.1.210
+     apps.diogomota.pt         → 192.168.1.210
      ```
 
 ### Step 8: Access Your Applications
@@ -86,9 +166,8 @@ Wait for all applications to show "Synced" and "Healthy" status.
 Once certificates are issued, access via domains:
 
 **Local Network Access (HTTPS with self-signed certificates):**
-- ArgoCD: https://argocd.homelab.local
+- ArgoCD: https://argocd.diogomota.pt
 
-**Note**: Your browser will warn about self-signed certificates. This is normal and safe for local use. Click "Advanced" → "Accept Risk and Continue" (or similar).
 
 Login credentials:
 - **ArgoCD**: username `admin`, password from Step 5

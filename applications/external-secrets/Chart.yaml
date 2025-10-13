@@ -1,0 +1,9 @@
+apiVersion: v2
+name: external-secrets
+description: External Secrets Operator reads information from a third-party service like AWS Secrets Manager and automatically injects the values as Kubernetes Secrets
+type: application
+version: 0.1.0
+dependencies:
+  - name: external-secrets
+    repository: https://charts.external-secrets.io
+    version: 0.20.2

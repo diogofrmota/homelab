@@ -1,0 +1,90 @@
+argo-cd:
+  ingress:
+    enabled: true
+    pathType: ImplementationSpecific
+    hostname: argocd.diogomota.pt
+    ingressClassName: nginx
+    tls: true
+    https: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/name: "ArgoCD"
+      gethomepage.dev/description: "CD for Kubernetes."
+      gethomepage.dev/group: "Tooling"
+      gethomepage.dev/icon: "argocd"
+
+  controller:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  dex:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  redis:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  repoServer:
+    useEphemeralHelmWorkingDir: false
+    logLevel: warn
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+    env:
+      - name: HELM_PLUGINS
+        value: /home/argocd/cmp-server/plugins
+
+    initContainers:
+      - name: helm-plugin-install
+        image: alpine/helm:3@sha256:a6c449188cf0b3f628cc6da192229a14d165bc8a702137ef750d7f789803721b
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            helm plugin install https://github.com/aslafy-z/helm-git;
+            helm plugin install https://github.com/hypnoglow/helm-s3;
+        env:
+          - name: HELM_PLUGINS
+            value: /home/argocd/cmp-server/plugins
+        volumeMounts:
+          - mountPath: /home/argocd/cmp-server/plugins
+            name: plugins
+
+  applicationSet:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+
+  server:
+    metrics:
+      enabled: false
+      serviceMonitor:
+        enabled: false
+
+      resource.compareoptions: |
+        ignoreAggregatedRoles: true
+        ignoreResourceStatusField: all
+
+      admin.enabled: "true"
+
+    rbac:
+      policy.default: role:readonly
+      policy.csv: |
+        g, diogofrmota@gmail.com, role:admin
+      scopes: "[groups, email]"
+
+#    secret:
+#      createSecret: true
+#      githubSecret: "$argo-webhook-secret:secret"
