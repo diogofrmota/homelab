@@ -10,10 +10,8 @@ spec:
         elements:
           - name: argocd
           - name: cert-manager
-          - name: external-secrets
           - name: homepage
           - name: ingress-nginx
-          - name: kube-prometheus-stack
           - name: metallb
 
   template:
