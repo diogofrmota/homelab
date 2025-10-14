@@ -19,17 +19,15 @@ app-template:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
       hosts:
-        - host: &host home.khuedoan.com
+        - host: &host "apps.diogomota.pt"
           paths:
             - path: /
               pathType: Prefix
-              service:
-                name: main
-                port: http
       tls:
-        - hosts:
+        - secretName: homepage-tls
+          hosts:
             - *host
-          secretName: homepage-tls-certificate
+            
   persistence:
     config:
       enabled: true
