@@ -49,12 +49,21 @@ homepage:
 
   config:
     bookmarks:
-      - Developer:
-          - Github:
-              - abbr: GH
-                href: https://github.com/
+      - Applications:
+          - Centralized, custom dashboard for the homelab, with service API integrations:
+              - abbr: Homepage
+                href: https://apps.diogomota.pt/
+          - Web Page showcasing professional experience and main projects:
+              - abbr: Portfolio
+                href: https://diogomota.pt/
+          - Declarative, GitOps continuous delivery tool for managing homelab's Kubernetes infrastructure:
+              - abbr: ArgoCD
+                href: https://argocd.diogomota.pt/
     services:
-      []
+      - My First Group:
+          - My First Service:
+              href: http://localhost/
+              description: Homepage is awesome
 
     widgets:
       - resources:
