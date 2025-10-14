@@ -49,7 +49,6 @@ homepage:
 
   config:
     bookmarks:
-      []
       - Developer:
           - Github:
               - abbr: GH
