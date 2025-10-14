@@ -166,8 +166,6 @@ Wait for all applications to show "Synced" and "Healthy" status.
 1. **Configure /etc/hosts**:
      ```bash
      argocd.diogomota.pt       → 192.168.1.210
-     grafana.diogomota.pt      → 192.168.1.210
-     prometheus.diogomota.pt   → 192.168.1.210
      apps.diogomota.pt         → 192.168.1.210
      ```
 
