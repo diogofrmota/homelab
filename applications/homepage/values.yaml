@@ -67,6 +67,11 @@ homepage:
           - My First Service:
               href: http://localhost/
               description: Homepage is awesome
+              icon: https://opencollective.com/favicon.ico
+          - My First Service:
+              href: http://localhost/
+              description: Homepage is awesome
+              icon: https://github.com/fluidicon.png
 
     widgets:
       - resources:
