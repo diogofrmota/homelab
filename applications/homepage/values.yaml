@@ -53,12 +53,15 @@ homepage:
           - Centralized, custom dashboard for the homelab, with service API integrations:
               - abbr: Homepage
                 href: https://apps.diogomota.pt/
+                icon: https://trueforge.org/svg/favicon.svg
           - Web Page showcasing professional experience and main projects:
               - abbr: Portfolio
                 href: https://diogomota.pt/
+                icon: https://github.com/fluidicon.png
           - Declarative, GitOps continuous delivery tool for managing homelab's Kubernetes infrastructure:
               - abbr: ArgoCD
                 href: https://argocd.diogomota.pt/
+                icon: https://opencollective.com/favicon.ico
     services:
       - My First Group:
           - My First Service:
