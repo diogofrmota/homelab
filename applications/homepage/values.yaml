@@ -51,7 +51,7 @@ homepage:
     settings:
       title: Homepage - Diogo's Homelab
       background: https://i.redd.it/8tlwnse4q0f11.jpg
-      backgroundOpacity: 0.9
+      backgroundOpacity: 0.7
       cardBlur: md
       theme: dark
       headerStyle: boxed
@@ -64,10 +64,10 @@ homepage:
           style: row
           columns: 3
         Other Apps:
-          style: row
-          columns: 3
-        bookmarks:
           style: column
+        bookmarks:
+          style: row
+          columns: 2
 
     widgets:
       - resources:
