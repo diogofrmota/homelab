@@ -109,7 +109,7 @@ homepage:
               description: Automating Let's Encrypt TLS certificate management in Kubernetes, handling the issuance and renewal.
               icon: https://gitlab.com/uploads/-/system/project/avatar/17168204/cert-manager-oci.png
           - Ingress-nginx (Ingress controller):
-              description: Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer.
+              description: Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer, managing traffic routing, SSL/TLS termination, and exposing services.
               icon: https://cdn.iconscout.com/icon/free/png-256/free-nginx-logo-icon-svg-download-png-3030173.png
           - Metallb (Load balancer):
               description: Load balancer that assigns IP addresses from the local network to Kubernetes services, making them accessible from outside the cluster.
@@ -117,13 +117,13 @@ homepage:
       - Monitoring:
           - Grafana (Monitoring Dashboard):
               href: https://grafana.diogomota.pt/
-              description: Interactive dashboards for real-time monitoring and data analytics.
+              description: Platform for analytics and monitoring, visualizing time-series data from sources like Prometheus.
               icon: https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/3/grafana-ipeuuhi0ws3fbikv7ojrk.png/grafana-625ktq51icaz2carazn0n.png
           - Prometheus (Metrics collection):
-              description: Interactive dashboards for real-time monitoring and data analytics.
+              description: Systems monitoring and alerting toolkit that collects and stores time-series metrics from configured targets.
               icon: https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Prometheus_software_logo.svg/775px-Prometheus_software_logo.svg.png
           - Alertmanager (Alerting):
-              description: Interactive dashboards for real-time monitoring and data analytics.
+              description: Handles alerts from Prometheus by deduplicating, grouping, and routing them to the correct receiver such as email and Telegram.
               icon: https://prometheus.io/twitter-image.png?b370f6418ef38b42
 
       - Other Apps:
@@ -133,26 +133,24 @@ homepage:
               icon: https://miro.medium.com/v2/resize:fit:1358/format:webp/1*zVLT-SMHrZKqwqfNPm4fkQ.png
  
     bookmarks:
-      - Homepage:
-          - Homepage app - Centralized, custom dashboard for the homelab, with service API integrations:
-              - abbr: Home
-                href: https://apps.diogomota.pt/
+      - Inside the cluster:
+          - Homepage - Custom dashboard for the homelab, with service API integrations:
+              - href: https://apps.diogomota.pt/
                 icon: https://cdn-icons-png.flaticon.com/512/5097/5097332.png
-      #- Personal Website:
-          - Portfolio - Web Page showcasing professional experience and main projects:
-              - abbr: PW
-                href: https://diogomota.pt/
+                #abbr: Home
+          - Personal Website - Web Page showcasing professional experience and main projects:
+              - href: https://diogomota.pt/
                 icon: https://cdn-icons-png.flaticon.com/512/909/909212.png
-      - Homelab Documentation and Git Repository:
-          - GitHub - Host of homelab full documentation, scripts and source files:
-              - abbr: GH
-                href: https://github.com/diogofrmota/homelab
+                #abbr: PW
+      - Outside the cluster:
+          - GitHub - Homelab Documentation and Git Repository:
+              - href: https://github.com/diogofrmota/homelab
                 icon: https://github.com/fluidicon.png
-      - Manage Secrets:
-          - Gitlab - DevOps platform for code repository, CI/CD and secure secrets (access tokens/ credentials):
-              - abbr: GL
-                href: https://gitlab.com/diogofrmota-group/homelab/
+                #abbr: GH
+          - Gitlab - Manage Secrets (access tokens/ credentials):
+              - href: https://gitlab.com/diogofrmota-group/homelab/
                 icon: https://gitlab.com/assets/favicon-72a2cad5025aa931d6ea56c3201d1f18e68a8cd39788c7c80d5b2b82aa5143ef.png
+                #abbr: GL
 
   persistence:
     logs:
