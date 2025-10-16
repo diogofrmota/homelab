@@ -89,16 +89,16 @@ homepage:
             memory: true
             showLabel: true
 
-#      - datetime:
-#          text_size: xl
-#          format:
-#            timeStyle: medium
-#
-#      - openmeteo:
-#          latitude: 38.7223
-#          longitude: 9.1393
-#          units: metric
-#          cache: 5
+      - datetime:
+          text_size: xl
+          format:
+            timeStyle: medium
+
+      - openmeteo:
+          latitude: 38.7223
+          longitude: 9.1393
+          units: metric
+          cache: 5
     kubernetes:
       mode: cluster
     docker:
