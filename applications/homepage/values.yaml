@@ -49,17 +49,25 @@ homepage:
 
   config:
     settings:
+      title: Homepage - Diogo's Homelab
       background: https://i.redd.it/8tlwnse4q0f11.jpg
-      #background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
-      backgroundOpacity: 0.6 # new
+      backgroundOpacity: 0.4
       cardBlur: md
       theme: dark
       headerStyle: boxed
       hideVersion: true
-      #layout:
-      #  Media:
-      #    style: row
-      #    columns: 3
+      layout:
+        Infrastructure:
+          style: row
+          columns: 3
+        Monitoring:
+          style: row
+          columns: 3
+        Other Apps:
+          style: row
+          columns: 3
+        bookmarks:
+          style: column
 
     widgets:
       - resources:
@@ -81,10 +89,10 @@ homepage:
             memory: true
             showLabel: true
 
-      - datetime:
-          text_size: xl
-          format:
-            timeStyle: medium
+#      - datetime:
+#          text_size: xl
+#          format:
+#            timeStyle: medium
 
       - openmeteo:
           latitude: 38.7223
