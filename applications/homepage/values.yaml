@@ -51,7 +51,7 @@ homepage:
     settings:
       title: Homepage - Diogo's Homelab
       background: https://i.redd.it/8tlwnse4q0f11.jpg
-      backgroundOpacity: 0.4
+      backgroundOpacity: 0.9
       cardBlur: md
       theme: dark
       headerStyle: boxed
