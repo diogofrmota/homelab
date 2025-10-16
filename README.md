@@ -12,7 +12,6 @@
 - Domain-based access on local network with `ingress-nginx`
 - TLS certificates (HTTPS) with `cert-manager` and Let's Encrypt
 - Load balancing with `metallb` for bare metal
-- External secrets management with `external-secrets` operator
 - Monitoring stack with `kube-prometheus-stack` (Prometheus + Grafana)
 - Application dashboard with `homepage`
 
@@ -24,8 +23,6 @@
 | Grafana | https://grafana.diogomota.pt | Monitoring dashboards |
 | Prometheus | https://prometheus.diogomota.pt | Metrics collection |
 | Homepage | https://apps.diogomota.pt | Application dashboard |
-| ArgoCD CLI | https://argocd.diogomota.pt | CLI access endpoints |
-| ArgoCD Webhook | https://argocd.diogomota.pt | Webhook endpoints |
 
 ## Repository Structure (update names)
 
@@ -34,7 +31,6 @@ homelab/
 ├── applications/ # Helm charts for applications
 │   ├── argocd/ # GitOps controller
 │   ├── cert-manager/ # TLS certificate management
-│   ├── external-secrets/ # External secrets operator
 │   ├── homepage/ # Application dashboard
 │   ├── ingress-nginx/ # Nginx ingress controller
 │   ├── kube-prometheus-stack/# Monitoring stack
@@ -70,7 +66,6 @@ See [installation.md](installation.md) for detailed setup instructions.
 * **MetalLB IP Range:** `192.168.1.210–225` (16 IPs total)
 * **Cluster Resources:** 3 nodes × 2 GB RAM = 6 GB total
 * **GitOps Pattern:** ArgoCD manages all components, including itself
-* **Secrets Management:** External Secrets Operator with GitLab as backend
 * **Monitoring:** Prometheus for metrics, Grafana for visualization
 
 ## Notes

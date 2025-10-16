@@ -3,6 +3,17 @@ homepage:
     repository: ghcr.io/gethomepage/homepage
     tag: v1.5.0@sha256:e7fc26f914cf5e7dcd6c566e24ca218addb879aa76478ad4a553b1f9ae48b1d7
   
+  settings:
+    background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+    cardBlur: md
+    theme: dark
+    headerStyle: boxed
+    hideVersion: true
+    layout:
+      Media:
+        style: row
+        columns: 4
+
   env:
     - name: HOMEPAGE_ALLOWED_HOSTS
       value: "apps.diogomota.pt"
@@ -48,40 +59,13 @@ homepage:
             - *host
 
   config:
-    bookmarks:
-      - Applications:
-          - Centralized, custom dashboard for the homelab, with service API integrations:
-              - abbr: Homepage
-                href: https://apps.diogomota.pt/
-                icon: https://trueforge.org/svg/favicon.svg
-          - Web Page showcasing professional experience and main projects:
-              - abbr: Portfolio
-                href: https://diogomota.pt/
-                icon: https://github.com/fluidicon.png
-          - Declarative, GitOps continuous delivery tool for managing homelab's Kubernetes infrastructure:
-              - abbr: ArgoCD
-                href: https://argocd.diogomota.pt/
-                icon: https://opencollective.com/favicon.ico
-    services:
-      - My First Group:
-          - My First Service:
-              href: http://localhost/
-              description: Homepage is awesome
-              icon: https://opencollective.com/favicon.ico
-          - My First Service:
-              href: http://localhost/
-              description: Homepage is awesome
-              icon: https://github.com/fluidicon.png
-
     widgets:
       - resources:
           backend: resources
           expanded: true
           cpu: true
           memory: true
-      - search:
-          provider: duckduckgo
-          target: _blank
+
       - kubernetes:
           cluster:
             show: true
@@ -94,11 +78,55 @@ homepage:
             cpu: true
             memory: true
             showLabel: true
+
+      - datetime:
+          text_size: xl
+          format:
+            timeStyle: medium
+
+      - greeting:
+          text_size: xl
+          text: Sol.Milkyway
+
+      - openmeteo:
+          latitude: 38.7223
+          longitude: 9.1393
+          units: Metric
+          cache: 5
     kubernetes:
       mode: cluster
     docker:
-    settings:
 
+    services:
+      - GitOps & Monitoring:
+          - ArgoCD:
+              href: https://argocd.diogomota.pt/
+              description: Declarative, GitOps continuous delivery tool for managing homelab's Kubernetes infrastructure.
+              icon: https://argo-cd.readthedocs.io/en/stable/assets/favicon.png
+          - Grafana:
+              href: https://grafana.diogomota.pt/
+              description: Interactive dashboards for real-time monitoring and data analytics.
+              icon: https://grafana.com/favicon.ico   
+      - Static Pages:
+          - Homepage:
+              href: https://apps.diogomota.pt/
+              description: Centralized, custom dashboard for the homelab, with service API integrations.
+              icon: https://cdn-icons-png.flaticon.com/512/5097/5097332.png
+          - Portfolio:
+              href: https://diogomota.pt/
+              description: Web Page showcasing professional experience and main projects.
+              icon: https://wallpapers.com/images/hd/document-icon-graphic-ry6hxlmiuy2qzh2g-2.jpg
+ 
+    bookmarks:
+      - Bookmarked Webpages:
+          - GitHub - Host of homelab full documentation, scripts and source files:
+              - abbr: GH
+                href: https://github.com/diogofrmota/homelab
+                icon: https://github.com/fluidicon.png
+          - Gitlab - DevOps platform for code repository, CI/CD and secure secrets (access tokens/ credentials):
+              - abbr: GL
+                href: https://gitlab.com/diogofrmota-group/homelab/
+                icon: https://gitlab.com/assets/favicon-72a2cad5025aa931d6ea56c3201d1f18e68a8cd39788c7c80d5b2b82aa5143ef.png
 
   persistence:
     logs:
