@@ -49,17 +49,17 @@ homepage:
 
   config:
     settings:
-      background: https://i.ibb.co/hMWFX6D/mountain-clouds.gif
+      background: https://i.redd.it/8tlwnse4q0f11.jpg
       #background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
       backgroundOpacity: 0.6 # new
       cardBlur: md
       theme: dark
       headerStyle: boxed
       hideVersion: true
-      layout:
-        Media:
-          style: row
-          columns: 3
+      #layout:
+      #  Media:
+      #    style: row
+      #    columns: 3
 
     widgets:
       - resources:
