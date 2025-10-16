@@ -7,49 +7,39 @@ echo "Starting homelab restart..."
 
 # Restart all components
 echo "Restarting kube-system (1/6)"
-restart kube-system \
-    deployment/coredns \
-    deployment/local-path-provisioner \
-    deployment/metrics-server
+kubectl -n kube-system rollout restart deployment coredns local-path-provisioner metrics-server
 
 sleep 20
 
 echo "Restarting argocd (2/6)"
-restart argocd \
-    deployment/argocd-applicationset-controller \
-    deployment/argocd-dex-server \
-    deployment/argocd-notifications-controller \
-    deployment/argocd-redis \
-    deployment/argocd-repo-server \
-    deployment/argocd-server \
-    statefulset/argocd-application-controller
+kubectl -n argocd rollout restart deployment argocd-applicationset-controller
+kubectl -n argocd rollout restart deployment argocd-dex-server
+kubectl -n argocd rollout restart deployment argocd-notifications-controller
+kubectl -n argocd rollout restart deployment argocd-redis
+kubectl -n argocd rollout restart deployment argocd-repo-server
+kubectl -n argocd rollout restart deployment argocd-server
+kubectl -n argocd rollout restart statefulset argocd-application-controller
 
 sleep 20
 
 echo "Restarting metallb (3/6)"
-restart metallb \
-    deployment/metallb-controller \
-    daemonset/metallb-speaker
+kubectl -n metallb rollout restart deployment metallb-controller
+kubectl -n metallb rollout restart daemonset metallb-speaker
 
 sleep 15
 
 echo "Restarting ingress-nginx (4/6)"
-restart ingress-nginx \
-    deployment/ingress-nginx-controller
+kubectl -n ingress-nginx rollout restart deployment ingress-nginx-controller
 
 sleep 10
 
 echo "Restarting cert-manager (5/6)"
-restart cert-manager \
-    deployment/cert-manager \
-    deployment/cert-manager-cainjector \
-    deployment/cert-manager-webhook
+kubectl -n cert-manager rollout restart deployment cert-manager cert-manager-cainjector cert-manager-webhook
 
 sleep 10
 
 echo "Restarting homepager (6/6)"
-restart homepage \
-    deployment/homepage
+kubectl -n homepage rollout restart deployment homepage
 
 echo "Waiting for all deployments to be ready..."
 kubectl wait --for=condition=available --timeout=300s deployment --all --all-namespaces
