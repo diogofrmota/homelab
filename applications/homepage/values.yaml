@@ -82,7 +82,7 @@ homepage:
       - datetime:
           text_size: xl
           format:
-            timeStyle: small
+            timeStyle: meddium
 
       - openmeteo:
           latitude: 38.7223
