@@ -57,7 +57,7 @@ homepage:
       layout:
         Media:
           style: row
-          columns: 4
+          columns: 3
 
     widgets:
       - resources:
@@ -87,38 +87,48 @@ homepage:
       - openmeteo:
           latitude: 38.7223
           longitude: 9.1393
-          units: Metric
+          units: metric
           cache: 5
     kubernetes:
       mode: cluster
     docker:
 
     services:
-      - GitOps & Monitoring:
-          - ArgoCD:
-              href: https://argocd.diogomota.pt/
-              description: Declarative, GitOps continuous delivery tool for managing homelab's Kubernetes infrastructure.
-              icon: https://argo-cd.readthedocs.io/en/stable/assets/favicon.png
-          - Grafana:
-              href: https://grafana.diogomota.pt/
-              description: Interactive dashboards for real-time monitoring and data analytics.
-              icon: https://grafana.com/favicon.ico   
-      - Static Pages:
+      - Installed Apps:
           - Homepage:
               href: https://apps.diogomota.pt/
               description: Centralized, custom dashboard for the homelab, with service API integrations.
               icon: https://cdn-icons-png.flaticon.com/512/5097/5097332.png
-          - Portfolio:
+          - ArgoCD (GitOps):
+              href: https://argocd.diogomota.pt/
+              description: Declarative, GitOps continuous delivery tool for managing homelab's Kubernetes infrastructure.
+              icon: https://miro.medium.com/v2/resize:fit:1358/format:webp/1*zVLT-SMHrZKqwqfNPm4fkQ.png
+          - Grafana (Monitoring):
+              href: https://grafana.diogomota.pt/
+              description: Interactive dashboards for real-time monitoring and data analytics.
+              icon: https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/3/grafana-ipeuuhi0ws3fbikv7ojrk.png/grafana-625ktq51icaz2carazn0n.png 
+          - Personal Website (Portfolio):
               href: https://diogomota.pt/
               description: Web Page showcasing professional experience and main projects.
-              icon: https://wallpapers.com/images/hd/document-icon-graphic-ry6hxlmiuy2qzh2g-2.jpg
+              icon: https://cdn-icons-png.flaticon.com/512/909/909212.png
+      - Infrastructure:
+          - Cert-Manager (TLS certificates management):
+              description: Automating Let's Encrypt TLS certificate management in Kubernetes, handling the issuance and renewal.
+              icon: https://gitlab.com/uploads/-/system/project/avatar/17168204/cert-manager-oci.png
+          - Ingress-nginx (Ingress controller):
+              description: Ingress controller for Kubernetes using NGINX as a reverse proxy and load balancer.
+              icon: https://cdn.iconscout.com/icon/free/png-256/free-nginx-logo-icon-svg-download-png-3030173.png
+          - Metallb (Load balancer):
+              description: Load balancer that assigns IP addresses from the local network to Kubernetes services, making them accessible from outside the cluster.
+              icon: https://artifacthub.io/image/51e10aa9-e31b-47c7-817b-12f9f3b5c05a@3x
  
     bookmarks:
-      - Bookmarked Webpages:
+      - Homelab Documentation and Git Repository:
           - GitHub - Host of homelab full documentation, scripts and source files:
               - abbr: GH
                 href: https://github.com/diogofrmota/homelab
                 icon: https://github.com/fluidicon.png
+      - Manage Secrets:
           - Gitlab - DevOps platform for code repository, CI/CD and secure secrets (access tokens/ credentials):
               - abbr: GL
                 href: https://gitlab.com/diogofrmota-group/homelab/
