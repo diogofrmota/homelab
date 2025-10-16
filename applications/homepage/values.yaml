@@ -93,12 +93,12 @@ homepage:
 #          text_size: xl
 #          format:
 #            timeStyle: medium
-
-      - openmeteo:
-          latitude: 38.7223
-          longitude: 9.1393
-          units: metric
-          cache: 5
+#
+#      - openmeteo:
+#          latitude: 38.7223
+#          longitude: 9.1393
+#          units: metric
+#          cache: 5
     kubernetes:
       mode: cluster
     docker:
@@ -138,7 +138,7 @@ homepage:
               - abbr: Home
                 href: https://apps.diogomota.pt/
                 icon: https://cdn-icons-png.flaticon.com/512/5097/5097332.png
-      - Personal Website:
+      #- Personal Website:
           - Portfolio - Web Page showcasing professional experience and main projects:
               - abbr: PW
                 href: https://diogomota.pt/
