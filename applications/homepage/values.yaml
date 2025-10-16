@@ -2,17 +2,6 @@ homepage:
   image:
     repository: ghcr.io/gethomepage/homepage
     tag: v1.5.0@sha256:e7fc26f914cf5e7dcd6c566e24ca218addb879aa76478ad4a553b1f9ae48b1d7
-  
-  settings:
-    background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
-    cardBlur: md
-    theme: dark
-    headerStyle: boxed
-    hideVersion: true
-    layout:
-      Media:
-        style: row
-        columns: 4
 
   env:
     - name: HOMEPAGE_ALLOWED_HOSTS
@@ -59,6 +48,17 @@ homepage:
             - *host
 
   config:
+    settings:
+      background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+      cardBlur: md
+      theme: dark
+      headerStyle: boxed
+      hideVersion: true
+      layout:
+        Media:
+          style: row
+          columns: 4
+
     widgets:
       - resources:
           backend: resources
@@ -82,11 +82,7 @@ homepage:
       - datetime:
           text_size: xl
           format:
-            timeStyle: medium
-
-      - greeting:
-          text_size: xl
-          text: Sol.Milkyway
+            timeStyle: small
 
       - openmeteo:
           latitude: 38.7223
